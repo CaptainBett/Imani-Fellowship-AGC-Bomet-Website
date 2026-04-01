@@ -1,0 +1,76 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block admin_content %}
+<h2 class="fw-bold mb-4">Site Settings</h2>
+
+<div class="card p-4">
+    <form method="POST" action="{{ url_for('admin_panel.settings') }}">
+        {{ form.hidden_tag() }}
+
+        <!-- Year Theme -->
+        <h5 class="fw-bold mb-3"><i class="bi bi-star"></i> Year Theme</h5>
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Theme Title</label>
+                {{ form.year_theme(class="form-control", placeholder="e.g. Walking in Faith") }}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Bible Verse</label>
+                {{ form.year_theme_verse(class="form-control", placeholder="e.g. Hebrews 11:1") }}
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- Contact Info -->
+        <h5 class="fw-bold mb-3 mt-4"><i class="bi bi-telephone"></i> Contact Information</h5>
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3">
+                <label class="form-label">WhatsApp Number</label>
+                {{ form.whatsapp_number(class="form-control", placeholder="254712345678") }}
+                <small class="text-muted">International format, no + sign</small>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Church Phone</label>
+                {{ form.church_phone(class="form-control", placeholder="+254 XXX XXX XXX") }}
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Church Email</label>
+                {{ form.church_email(class="form-control", placeholder="info@imanifellowship.co.ke") }}
+                {% for error in form.church_email.errors %}
+                    <div class="text-danger small mt-1">{{ error }}</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- Social Media -->
+        <h5 class="fw-bold mb-3 mt-4"><i class="bi bi-share"></i> Social Media Links</h5>
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <label class="form-label"><i class="bi bi-facebook"></i> Facebook</label>
+                {{ form.facebook_url(class="form-control", placeholder="https://facebook.com/imanifellowship") }}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label"><i class="bi bi-youtube"></i> YouTube</label>
+                {{ form.youtube_url(class="form-control", placeholder="https://youtube.com/@imanifellowship") }}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label"><i class="bi bi-instagram"></i> Instagram</label>
+                {{ form.instagram_url(class="form-control", placeholder="https://instagram.com/imanifellowship") }}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label"><i class="bi bi-twitter-x"></i> Twitter / X</label>
+                {{ form.twitter_url(class="form-control", placeholder="https://x.com/imanifellowship") }}
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg">
+            <i class="bi bi-check-circle"></i> Save Settings
+        </button>
+    </form>
+</div>
+{% endblock %}

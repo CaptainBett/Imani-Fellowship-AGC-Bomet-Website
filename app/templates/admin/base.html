@@ -71,12 +71,14 @@
 
                     <li class="sidebar-heading">Content</li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {% if 'announcements' in request.endpoint %}active{% endif %}"
+                           href="{{ url_for('admin_panel.announcements_list') }}">
                             <i class="bi bi-megaphone"></i> Announcements
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {% if 'events' in request.endpoint %}active{% endif %}"
+                           href="{{ url_for('admin_panel.events_list') }}">
                             <i class="bi bi-calendar-event"></i> Events
                         </a>
                     </li>
@@ -86,7 +88,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {% if 'pages' in request.endpoint %}active{% endif %}"
+                           href="{{ url_for('admin_panel.pages_list') }}">
                             <i class="bi bi-file-earmark-text"></i> Pages
                         </a>
                     </li>
@@ -103,7 +106,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {% if 'team' in request.endpoint %}active{% endif %}"
+                           href="{{ url_for('admin_panel.team_list') }}">
                             <i class="bi bi-person-badge"></i> Team Members
                         </a>
                     </li>
@@ -144,7 +148,8 @@
 
                     <li class="sidebar-heading">System</li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {% if 'settings' in request.endpoint %}active{% endif %}"
+                           href="{{ url_for('admin_panel.settings') }}">
                             <i class="bi bi-gear"></i> Settings
                         </a>
                     </li>

@@ -1,0 +1,93 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Events{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">Events</h2>
+    <a href="{{ url_for('admin_panel.events_create') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> New Event
+    </a>
+</div>
+
+{% if events.items %}
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Event</th>
+                    <th>Date & Time</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in events.items %}
+                <tr>
+                    <td><strong>{{ item.title }}</strong></td>
+                    <td>
+                        {{ item.start_datetime.strftime('%b %d, %Y') }}<br>
+                        <small class="text-muted">{{ item.start_datetime.strftime('%I:%M %p') }}</small>
+                        {% if item.is_recurring %}
+                            <br><span class="badge bg-info">{{ item.recurrence_rule }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-muted">{{ item.location or '—' }}</td>
+                    <td>
+                        {% if item.is_published %}
+                            <span class="badge bg-success">Published</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Hidden</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        <a href="{{ url_for('admin_panel.events_edit', id=item.id) }}"
+                           class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <form method="POST" action="{{ url_for('admin_panel.events_delete', id=item.id) }}"
+                              class="d-inline" onsubmit="return confirm('Delete this event?')">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if events.pages > 1 %}
+<nav class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if events.has_prev %}
+            <li class="page-item"><a class="page-link" href="?page={{ events.prev_num }}">Previous</a></li>
+        {% endif %}
+        {% for p in events.iter_pages() %}
+            {% if p %}
+                <li class="page-item {% if p == events.page %}active{% endif %}">
+                    <a class="page-link" href="?page={{ p }}">{{ p }}</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% endif %}
+        {% endfor %}
+        {% if events.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ events.next_num }}">Next</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="card p-5 text-center">
+    <i class="bi bi-calendar-event text-muted" style="font-size: 3rem;"></i>
+    <p class="text-muted mt-3">No events yet.</p>
+    <a href="{{ url_for('admin_panel.events_create') }}" class="btn btn-primary">Create your first event</a>
+</div>
+{% endif %}
+{% endblock %}

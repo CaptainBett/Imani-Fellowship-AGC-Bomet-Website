@@ -35,10 +35,22 @@ def create_app(config_name=None):
     # Import models so Flask-Migrate can detect them
     from app import models  # noqa: F401
 
-    # Context processor for templates
+    # Context processor for templates — injects site settings globally
     @app.context_processor
     def inject_globals():
         from datetime import datetime
-        return {'now': datetime.now}
+        from app.models.site_setting import SiteSetting
+        return {
+            'now': datetime.now,
+            'site': {
+                'whatsapp_number': SiteSetting.get('whatsapp_number', ''),
+                'church_phone': SiteSetting.get('church_phone', '+254 XXX XXX XXX'),
+                'church_email': SiteSetting.get('church_email', 'info@imanifellowship.co.ke'),
+                'facebook_url': SiteSetting.get('facebook_url', ''),
+                'youtube_url': SiteSetting.get('youtube_url', ''),
+                'instagram_url': SiteSetting.get('instagram_url', ''),
+                'twitter_url': SiteSetting.get('twitter_url', ''),
+            },
+        }
 
     return app
