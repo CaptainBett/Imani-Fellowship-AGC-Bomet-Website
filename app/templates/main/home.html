@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container text-center">
+        <span class="year-theme-badge mb-4">{{ year_theme }}</span>
+        {% if year_theme_verse %}
+            <p class="mt-3 fst-italic opacity-75">"{{ year_theme_verse }}"</p>
+        {% endif %}
+        <h1 class="mt-3">Welcome to Imani Fellowship AGC</h1>
+        <p class="lead mt-3">A Christ-centered community of faith, worship, and service in Bomet, Kenya.</p>
+        <div class="mt-4">
+            <a href="#" class="btn btn-warning btn-lg fw-bold me-2">
+                <i class="bi bi-heart-fill"></i> Give Online
+            </a>
+            <a href="#" class="btn btn-outline-light btn-lg">
+                <i class="bi bi-person-plus"></i> I'm New Here
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Service Times -->
+<section class="section-padding bg-light">
+    <div class="container">
+        <h2 class="section-title text-center section-title-center">Join Us This Week</h2>
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-4">
+                <div class="card text-center p-4 h-100">
+                    <div class="card-body">
+                        <i class="bi bi-sun text-primary" style="font-size: 2.5rem;"></i>
+                        <h5 class="card-title mt-3">Sunday Service</h5>
+                        <p class="card-text text-muted">8:00 AM &amp; 10:30 AM</p>
+                        <p class="card-text text-muted small">Main Sanctuary, Bomet</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center p-4 h-100">
+                    <div class="card-body">
+                        <i class="bi bi-book text-primary" style="font-size: 2.5rem;"></i>
+                        <h5 class="card-title mt-3">Bible Study</h5>
+                        <p class="card-text text-muted">Wednesday 5:30 PM</p>
+                        <p class="card-text text-muted small">Fellowship Hall</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center p-4 h-100">
+                    <div class="card-body">
+                        <i class="bi bi-people text-primary" style="font-size: 2.5rem;"></i>
+                        <h5 class="card-title mt-3">Fellowship Groups</h5>
+                        <p class="card-text text-muted">Various Days</p>
+                        <p class="card-text text-muted small">Berea, Chepkosa &amp; more</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Ministries Preview -->
+<section class="section-padding">
+    <div class="container">
+        <h2 class="section-title text-center section-title-center">Our Ministries</h2>
+        <div class="row g-4">
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="card text-center p-3 h-100">
+                    <div class="card-body">
+                        <i class="bi bi-emoji-smile text-primary" style="font-size: 2rem;"></i>
+                        <h6 class="mt-2">Children's Ministry</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="card text-center p-3 h-100">
+                    <div class="card-body">
+                        <i class="bi bi-lightning text-primary" style="font-size: 2rem;"></i>
+                        <h6 class="mt-2">Youth Ministry</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="card text-center p-3 h-100">
+                    <div class="card-body">
+                        <i class="bi bi-briefcase text-primary" style="font-size: 2rem;"></i>
+                        <h6 class="mt-2">Mizizi</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="card text-center p-3 h-100">
+                    <div class="card-body">
+                        <i class="bi bi-music-note-beamed text-primary" style="font-size: 2rem;"></i>
+                        <h6 class="mt-2">Choir</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="card text-center p-3 h-100">
+                    <div class="card-body">
+                        <i class="bi bi-mic text-primary" style="font-size: 2rem;"></i>
+                        <h6 class="mt-2">Praise &amp; Worship</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="card text-center p-3 h-100">
+                    <div class="card-body">
+                        <i class="bi bi-heart text-primary" style="font-size: 2rem;"></i>
+                        <h6 class="mt-2">Compassion</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="card text-center p-3 h-100">
+                    <div class="card-body">
+                        <i class="bi bi-mortarboard text-primary" style="font-size: 2rem;"></i>
+                        <h6 class="mt-2">Bridge Program</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="card text-center p-3 h-100">
+                    <div class="card-body">
+                        <i class="bi bi-journal-text text-primary" style="font-size: 2rem;"></i>
+                        <h6 class="mt-2">Catechism</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Church Construction CTA -->
+<section class="section-padding" style="background: linear-gradient(135deg, var(--imani-accent) 0%, #1b5e20 100%); color: white;">
+    <div class="container text-center">
+        <h2 class="fw-bold mb-3"><i class="bi bi-building"></i> Building God's House Together</h2>
+        <p class="lead mb-4">Our new church is under construction! Join one of our 10 fundraising groups and be part of this journey.</p>
+        <a href="#" class="btn btn-warning btn-lg fw-bold">
+            <i class="bi bi-heart-fill"></i> Support the Construction
+        </a>
+    </div>
+</section>
+
+<!-- Quick Links Section -->
+<section class="section-padding bg-light">
+    <div class="container">
+        <div class="row g-4 text-center">
+            <div class="col-md-3">
+                <a href="#" class="text-decoration-none">
+                    <div class="card p-4 h-100">
+                        <i class="bi bi-calendar-event text-primary" style="font-size: 2.5rem;"></i>
+                        <h5 class="mt-3 text-dark">Events</h5>
+                        <p class="text-muted small">See what's happening</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="#" class="text-decoration-none">
+                    <div class="card p-4 h-100">
+                        <i class="bi bi-camera-video text-primary" style="font-size: 2.5rem;"></i>
+                        <h5 class="mt-3 text-dark">Sermons</h5>
+                        <p class="text-muted small">Watch & listen</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="#" class="text-decoration-none">
+                    <div class="card p-4 h-100">
+                        <i class="bi bi-pray text-primary" style="font-size: 2.5rem;"></i>
+                        <h5 class="mt-3 text-dark">Prayer Request</h5>
+                        <p class="text-muted small">We'll pray with you</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="#" class="text-decoration-none">
+                    <div class="card p-4 h-100">
+                        <i class="bi bi-megaphone text-primary" style="font-size: 2.5rem;"></i>
+                        <h5 class="mt-3 text-dark">Announcements</h5>
+                        <p class="text-muted small">Stay updated</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

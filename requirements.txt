@@ -1,0 +1,14 @@
+flask==3.1.1
+flask-sqlalchemy==3.1.1
+flask-migrate==4.0.7
+flask-login==0.6.3
+flask-wtf==1.2.2
+flask-mail==0.10.0
+flask-limiter==3.8.0
+psycopg2-binary==2.9.10
+python-dotenv==1.0.1
+gunicorn==22.0.0
+Pillow==11.1.0
+boto3==1.35.80
+requests==2.32.3
+email-validator==2.2.0
