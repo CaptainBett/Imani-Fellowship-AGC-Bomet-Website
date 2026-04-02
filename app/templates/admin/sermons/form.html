@@ -1,0 +1,126 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ 'Edit' if editing else 'Add' }} Sermon{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>{{ 'Edit' if editing else 'Add New' }} Sermon / Devotional</h2>
+    <a href="{{ url_for('admin_panel.sermons_list') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+</div>
+
+<div class="card p-4">
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Title <span class="text-danger">*</span></label>
+                    {{ form.title(class="form-control", placeholder="Sermon title") }}
+                    {% for error in form.title.errors %}
+                        <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Short Summary</label>
+                    {{ form.excerpt(class="form-control", placeholder="Brief description for listings") }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Content / Notes</label>
+                    {{ form.body(class="form-control tinymce-editor", rows=12) }}
+                    <small class="text-muted">Rich text — sermon notes, devotional content, or study material.</small>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Type <span class="text-danger">*</span></label>
+                    {{ form.content_type(class="form-select") }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Speaker</label>
+                    {{ form.speaker(class="form-control", placeholder="e.g. Pastor John") }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Series</label>
+                    {{ form.series(class="form-control", placeholder="e.g. Walking in Faith") }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Scripture Reference</label>
+                    {{ form.scripture_reference(class="form-control", placeholder="e.g. John 3:16-18") }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Date</label>
+                    {{ form.sermon_date(class="form-control") }}
+                </div>
+
+                <hr>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Video URL</label>
+                    {{ form.video_url(class="form-control", placeholder="YouTube or Vimeo link") }}
+                    <small class="text-muted">Paste a YouTube or Vimeo link — it will be embedded automatically.</small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Audio URL</label>
+                    {{ form.audio_url(class="form-control", placeholder="Link to audio file") }}
+                    <small class="text-muted">Direct link to an MP3 or audio file for the HTML5 player.</small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Cover Image</label>
+                    {{ form.image(class="form-control") }}
+                    {% if editing and item.image_url %}
+                        <img src="{{ url_for('static', filename=item.image_url) }}" class="img-thumbnail mt-2" style="max-height: 120px;">
+                    {% endif %}
+                </div>
+
+                <hr>
+
+                <div class="mb-3">
+                    <div class="form-check">
+                        {{ form.is_published(class="form-check-input") }}
+                        <label class="form-check-label">Published</label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        {{ form.is_featured(class="form-check-input") }}
+                        <label class="form-check-label">Featured</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-lg"></i> {{ 'Update' if editing else 'Create' }}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if config.TINYMCE_API_KEY %}
+<script src="https://cdn.tiny.cloud/1/{{ config.TINYMCE_API_KEY }}/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+    tinymce.init({
+        selector: '.tinymce-editor',
+        height: 400,
+        menubar: false,
+        plugins: 'lists link image code table',
+        toolbar: 'undo redo | blocks | bold italic | bullist numlist | link image | code',
+    });
+</script>
+{% endif %}
+{% endblock %}

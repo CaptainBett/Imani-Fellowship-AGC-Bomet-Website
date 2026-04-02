@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}{{ sermon.title }}{% endblock %}
+{% block meta_description %}{{ sermon.excerpt or sermon.title }} — Imani Fellowship AGC Bomet{% endblock %}
+
+{% block extra_css %}
+<style>
+    .sermon-body img { max-width: 100%; height: auto; }
+    .audio-player { background: #f8f9fa; border-radius: 12px; padding: 1rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb" class="mb-3">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ url_for('main.home') }}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{{ url_for('media.sermons_index') }}">Sermons</a></li>
+                        <li class="breadcrumb-item active">{{ sermon.title }}</li>
+                    </ol>
+                </nav>
+
+                <!-- Header -->
+                <div class="mb-4">
+                    {% if sermon.content_type == 'sermon' %}
+                        <span class="badge bg-primary mb-2">Sermon</span>
+                    {% elif sermon.content_type == 'devotional' %}
+                        <span class="badge bg-info mb-2">Devotional</span>
+                    {% else %}
+                        <span class="badge bg-secondary mb-2">Study Note</span>
+                    {% endif %}
+
+                    {% if sermon.series %}
+                        <span class="badge bg-outline-secondary border mb-2">{{ sermon.series }}</span>
+                    {% endif %}
+
+                    <h1>{{ sermon.title }}</h1>
+
+                    <div class="text-muted mb-3">
+                        {% if sermon.speaker %}<span class="me-3"><i class="bi bi-person"></i> {{ sermon.speaker }}</span>{% endif %}
+                        {% if sermon.sermon_date %}<span class="me-3"><i class="bi bi-calendar"></i> {{ sermon.sermon_date.strftime('%d %B %Y') }}</span>{% endif %}
+                        {% if sermon.scripture_reference %}<span><i class="bi bi-book"></i> {{ sermon.scripture_reference }}</span>{% endif %}
+                    </div>
+                </div>
+
+                <!-- Video Embed -->
+                {% if sermon.video_url %}
+                <div class="ratio ratio-16x9 mb-4 rounded overflow-hidden shadow-sm">
+                    <iframe src="{{ sermon.embed_url }}" allowfullscreen
+                            title="{{ sermon.title }}"></iframe>
+                </div>
+                {% elif sermon.image_url %}
+                <img src="{{ url_for('static', filename=sermon.image_url) }}"
+                     class="img-fluid rounded mb-4 shadow-sm" alt="{{ sermon.title }}">
+                {% endif %}
+
+                <!-- Audio Player -->
+                {% if sermon.audio_url %}
+                <div class="audio-player mb-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <i class="bi bi-music-note-beamed text-primary fs-4"></i>
+                        <div class="flex-grow-1">
+                            <small class="text-muted d-block">Listen to this {{ sermon.content_type }}</small>
+                            <audio controls class="w-100" preload="none">
+                                <source src="{{ sermon.audio_url }}" type="audio/mpeg">
+                                Your browser does not support the audio element.
+                            </audio>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Sermon Body / Notes -->
+                {% if sermon.body %}
+                <div class="sermon-body mb-5">
+                    {{ sermon.body|safe }}
+                </div>
+                {% endif %}
+
+                <hr>
+
+                <!-- Navigation -->
+                <div class="d-flex justify-content-between mt-4">
+                    {% if prev_sermon %}
+                    <a href="{{ url_for('media.sermon_detail', slug=prev_sermon.slug) }}"
+                       class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-left"></i> {{ prev_sermon.title[:30] }}{% if prev_sermon.title|length > 30 %}...{% endif %}
+                    </a>
+                    {% else %}
+                    <div></div>
+                    {% endif %}
+
+                    {% if next_sermon %}
+                    <a href="{{ url_for('media.sermon_detail', slug=next_sermon.slug) }}"
+                       class="btn btn-outline-primary">
+                        {{ next_sermon.title[:30] }}{% if next_sermon.title|length > 30 %}...{% endif %} <i class="bi bi-arrow-right"></i>
+                    </a>
+                    {% endif %}
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('media.sermons_index') }}" class="btn btn-link">
+                        <i class="bi bi-grid"></i> View All Sermons
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

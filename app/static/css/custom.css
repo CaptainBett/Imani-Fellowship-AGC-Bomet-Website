@@ -129,11 +129,25 @@
 }
 
 /* -- Give Button in Navbar -- */
-.nav-link.btn-warning {
+.navbar .btn-give {
+    background-color: var(--imani-secondary) !important;
+    color: var(--imani-primary) !important;
     border-radius: 20px;
+    font-weight: 700;
+    padding: 0.4rem 1.2rem;
+}
+
+.navbar .btn-give:hover {
+    background-color: #b8962e !important;
+    color: #fff !important;
 }
 
 /* -- Footer -- */
+footer .text-muted {
+    color: #adb5bd !important;
+}
+
+footer a.text-muted:hover,
 footer a:hover {
     color: var(--imani-secondary) !important;
 }

@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Sermons & Devotionals{% endblock %}
+{% block meta_description %}Listen to sermons, read devotionals and study notes from Imani Fellowship AGC Bomet.{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<section class="hero-section" style="min-height: 30vh; padding: 3rem 0;">
+    <div class="container text-center">
+        <h1>Sermons & Devotionals</h1>
+        <p class="lead">Be fed by the Word — listen, watch, and read.</p>
+    </div>
+</section>
+
+<section class="section-padding">
+    <div class="container">
+
+        <!-- Featured Sermon -->
+        {% if featured and not current_type and not current_series %}
+        <div class="card mb-5 border-0 shadow-sm overflow-hidden">
+            <div class="row g-0">
+                {% if featured.video_url %}
+                <div class="col-lg-7">
+                    <div class="ratio ratio-16x9">
+                        <iframe src="{{ featured.embed_url }}" allowfullscreen
+                                title="{{ featured.title }}"></iframe>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                {% elif featured.image_url %}
+                <div class="col-lg-5">
+                    <img src="{{ url_for('static', filename=featured.image_url) }}"
+                         class="w-100 h-100" style="object-fit: cover;" alt="{{ featured.title }}">
+                </div>
+                <div class="col-lg-7">
+                {% else %}
+                <div class="col-12">
+                {% endif %}
+                    <div class="card-body p-4">
+                        <span class="badge bg-warning text-dark mb-2">Featured</span>
+                        <h3 class="card-title">{{ featured.title }}</h3>
+                        {% if featured.speaker %}
+                            <p class="text-muted mb-1"><i class="bi bi-person"></i> {{ featured.speaker }}</p>
+                        {% endif %}
+                        {% if featured.scripture_reference %}
+                            <p class="text-muted mb-2"><i class="bi bi-book"></i> {{ featured.scripture_reference }}</p>
+                        {% endif %}
+                        {% if featured.excerpt %}
+                            <p>{{ featured.excerpt }}</p>
+                        {% endif %}
+
+                        {% if featured.audio_url %}
+                        <div class="mt-3">
+                            <audio controls class="w-100" preload="none">
+                                <source src="{{ featured.audio_url }}" type="audio/mpeg">
+                                Your browser does not support the audio element.
+                            </audio>
+                        </div>
+                        {% endif %}
+
+                        <a href="{{ url_for('media.sermon_detail', slug=featured.slug) }}"
+                           class="btn btn-primary mt-3">Read More</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Filters -->
+        <div class="d-flex flex-wrap gap-2 mb-4 align-items-center">
+            <span class="fw-bold me-2">Filter:</span>
+            <div class="btn-group btn-group-sm">
+                <a href="{{ url_for('media.sermons_index') }}"
+                   class="btn {% if not current_type %}btn-primary{% else %}btn-outline-primary{% endif %}">All</a>
+                <a href="{{ url_for('media.sermons_index', type='sermon') }}"
+                   class="btn {% if current_type == 'sermon' %}btn-primary{% else %}btn-outline-primary{% endif %}">Sermons</a>
+                <a href="{{ url_for('media.sermons_index', type='devotional') }}"
+                   class="btn {% if current_type == 'devotional' %}btn-primary{% else %}btn-outline-primary{% endif %}">Devotionals</a>
+                <a href="{{ url_for('media.sermons_index', type='note') }}"
+                   class="btn {% if current_type == 'note' %}btn-primary{% else %}btn-outline-primary{% endif %}">Study Notes</a>
+            </div>
+
+            {% if all_series %}
+            <select class="form-select form-select-sm" style="width: auto;"
+                    onchange="if(this.value) window.location.href=this.value">
+                <option value="{{ url_for('media.sermons_index', type=current_type) }}">All Series</option>
+                {% for s in all_series %}
+                    <option value="{{ url_for('media.sermons_index', type=current_type, series=s) }}"
+                            {% if current_series == s %}selected{% endif %}>{{ s }}</option>
+                {% endfor %}
+            </select>
+            {% endif %}
+        </div>
+
+        <!-- Sermon Cards -->
+        <div id="sermon-list">
+            {% include "sermons/_cards.html" %}
+        </div>
+    </div>
+</section>
+{% endblock %}

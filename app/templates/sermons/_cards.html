@@ -1,0 +1,87 @@
+<!-- Sermon cards partial (used by main page and HTMX load-more) -->
+<div class="row g-4">
+    {% for sermon in sermons.items %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100">
+            {% if sermon.image_url %}
+                <img src="{{ url_for('static', filename=sermon.image_url) }}" class="card-img-top"
+                     style="height: 180px; object-fit: cover;" alt="{{ sermon.title }}">
+            {% elif sermon.video_url %}
+                <div class="card-img-top bg-dark d-flex align-items-center justify-content-center"
+                     style="height: 180px;">
+                    <i class="bi bi-play-circle text-white" style="font-size: 3rem;"></i>
+                </div>
+            {% else %}
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
+                     style="height: 180px;">
+                    <i class="bi bi-journal-text text-muted" style="font-size: 3rem;"></i>
+                </div>
+            {% endif %}
+
+            <div class="card-body">
+                <div class="d-flex gap-2 mb-2">
+                    {% if sermon.content_type == 'sermon' %}
+                        <span class="badge bg-primary">Sermon</span>
+                    {% elif sermon.content_type == 'devotional' %}
+                        <span class="badge bg-info">Devotional</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Note</span>
+                    {% endif %}
+                    {% if sermon.video_url %}<span class="badge bg-danger"><i class="bi bi-camera-video"></i></span>{% endif %}
+                    {% if sermon.audio_url %}<span class="badge bg-success"><i class="bi bi-music-note"></i></span>{% endif %}
+                </div>
+
+                <h5 class="card-title">
+                    <a href="{{ url_for('media.sermon_detail', slug=sermon.slug) }}"
+                       class="text-decoration-none text-dark">{{ sermon.title }}</a>
+                </h5>
+
+                {% if sermon.speaker %}
+                    <p class="text-muted small mb-1"><i class="bi bi-person"></i> {{ sermon.speaker }}</p>
+                {% endif %}
+                {% if sermon.scripture_reference %}
+                    <p class="text-muted small mb-1"><i class="bi bi-book"></i> {{ sermon.scripture_reference }}</p>
+                {% endif %}
+                {% if sermon.sermon_date %}
+                    <p class="text-muted small mb-0"><i class="bi bi-calendar"></i> {{ sermon.sermon_date.strftime('%d %b %Y') }}</p>
+                {% endif %}
+
+                {% if sermon.excerpt %}
+                    <p class="mt-2 small">{{ sermon.excerpt[:120] }}{% if sermon.excerpt|length > 120 %}...{% endif %}</p>
+                {% endif %}
+            </div>
+
+            <div class="card-footer bg-transparent border-0 pb-3">
+                <a href="{{ url_for('media.sermon_detail', slug=sermon.slug) }}"
+                   class="btn btn-sm btn-outline-primary">
+                    {% if sermon.video_url %}Watch{% elif sermon.audio_url %}Listen{% else %}Read{% endif %}
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center text-muted py-5">
+        <i class="bi bi-journal-x" style="font-size: 3rem;"></i>
+        <p class="mt-2">No sermons or devotionals found.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- HTMX Load More -->
+{% if sermons.has_next %}
+<div class="text-center mt-4" id="load-more-container">
+    <button class="btn btn-outline-primary"
+            hx-get="{{ url_for('media.sermons_load_more', page=sermons.next_num, type=current_type|default('')) }}"
+            hx-target="#sermon-list .row"
+            hx-swap="beforeend"
+            hx-select=".row > *"
+            hx-on::after-request="
+                if(this.closest('#load-more-container')) {
+                    this.closest('#load-more-container').remove();
+                }
+            ">
+        Load More <i class="bi bi-arrow-down"></i>
+    </button>
+</div>
+{% endif %}
