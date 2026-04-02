@@ -37,23 +37,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('main.about') }}">About</a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            Ministries
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Children's Ministry</a></li>
-                            <li><a class="dropdown-item" href="#">Youth Ministry</a></li>
-                            <li><a class="dropdown-item" href="#">Mizizi</a></li>
-                            <li><a class="dropdown-item" href="#">Choir</a></li>
-                            <li><a class="dropdown-item" href="#">Praise &amp; Worship</a></li>
-                            <li><a class="dropdown-item" href="#">Compassion Ministry</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#">All Ministries</a></li>
-                        </ul>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('ministries.index') }}">Ministries</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Fellowships</a>
+                        <a class="nav-link" href="{{ url_for('ministries.fellowships') }}">Fellowships</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Sermons</a>
@@ -61,8 +49,17 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#">Events</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Media</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Connect
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('connect.newcomers') }}">I'm New</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('connect.connection_card') }}">Connection Card</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('connect.volunteer') }}">Volunteer</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('connect.services') }}">Services & Facilities</a></li>
+                        </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link btn btn-warning text-dark fw-bold ms-lg-2 px-3" href="#">

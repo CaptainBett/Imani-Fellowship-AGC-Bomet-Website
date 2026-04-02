@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Services & Facilities{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <h1 class="section-title text-center section-title-center">Services & Facilities</h1>
+        <p class="text-center text-muted mb-5">We offer various services to bless our community.</p>
+
+        <div class="row g-4">
+            <!-- Daycare -->
+            <div class="col-md-6">
+                <div class="card h-100 p-4">
+                    <div class="text-center mb-3">
+                        <i class="bi bi-emoji-heart-eyes text-primary" style="font-size: 3rem;"></i>
+                    </div>
+                    <h3 class="text-center">Daycare Services</h3>
+                    {% if daycare_page %}
+                        <div class="content-body">{{ daycare_page.content|safe }}</div>
+                    {% else %}
+                        <p class="text-muted text-center">
+                            We provide quality daycare services for parents who need a safe and nurturing
+                            environment for their children during work hours. Our trained caregivers
+                            ensure your children are well looked after.
+                        </p>
+                        <p class="text-muted text-center small">
+                            <i>Detailed information can be added via the admin panel (Pages > "Daycare").</i>
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Conference Venue -->
+            <div class="col-md-6">
+                <div class="card h-100 p-4">
+                    <div class="text-center mb-3">
+                        <i class="bi bi-building text-primary" style="font-size: 3rem;"></i>
+                    </div>
+                    <h3 class="text-center">Conference & Meeting Venue</h3>
+                    {% if conference_page %}
+                        <div class="content-body">{{ conference_page.content|safe }}</div>
+                    {% else %}
+                        <p class="text-muted text-center">
+                            Our church facilities are available for meetings, conferences, and community
+                            events. The venue is well-equipped with seating and amenities for your gatherings.
+                        </p>
+                        <p class="text-muted text-center small">
+                            <i>Detailed information can be added via the admin panel (Pages > "Conference Venue").</i>
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- General page content if exists -->
+        {% if page %}
+        <div class="mt-5">
+            <div class="content-body">{{ page.content|safe }}</div>
+        </div>
+        {% endif %}
+
+        <!-- Contact CTA -->
+        <div class="text-center mt-5">
+            <p class="text-muted">For inquiries about our services and facilities, please contact us:</p>
+            <p>
+                <i class="bi bi-telephone text-primary"></i> {{ site.church_phone }}
+                &nbsp;&nbsp;|&nbsp;&nbsp;
+                <i class="bi bi-envelope text-primary"></i> {{ site.church_email }}
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -32,6 +32,12 @@ def create_app(config_name=None):
     from app.blueprints.admin_panel import admin_bp
     app.register_blueprint(admin_bp, url_prefix='/admin')
 
+    from app.blueprints.ministries import ministries_bp
+    app.register_blueprint(ministries_bp)
+
+    from app.blueprints.connect import connect_bp
+    app.register_blueprint(connect_bp)
+
     # Import models so Flask-Migrate can detect them
     from app import models  # noqa: F401
 

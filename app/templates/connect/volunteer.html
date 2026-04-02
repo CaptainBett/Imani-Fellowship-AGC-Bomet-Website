@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Volunteer{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <h1 class="section-title text-center section-title-center">Volunteer with Us</h1>
+                <p class="text-center text-muted mb-4">
+                    God has given each of us unique gifts and talents. We'd love for you to use yours
+                    to serve our church and community!
+                </p>
+
+                <div class="card p-4">
+                    <div id="volunteer-form-container">
+                        <form method="POST" action="{{ url_for('connect.volunteer') }}"
+                              hx-post="{{ url_for('connect.volunteer') }}"
+                              hx-target="#volunteer-form-container"
+                              hx-swap="innerHTML">
+                            {{ form.hidden_tag() }}
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Your Name <span class="text-danger">*</span></label>
+                                {{ form.name(class="form-control", placeholder="Full name") }}
+                                {% for error in form.name.errors %}
+                                    <div class="text-danger small mt-1">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Email</label>
+                                    {{ form.email(class="form-control", placeholder="your@email.com") }}
+                                    {% for error in form.email.errors %}
+                                        <div class="text-danger small mt-1">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Phone <span class="text-danger">*</span></label>
+                                    {{ form.phone(class="form-control", placeholder="0712 345 678") }}
+                                    {% for error in form.phone.errors %}
+                                        <div class="text-danger small mt-1">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Ministry of Interest</label>
+                                {{ form.ministry_id(class="form-select") }}
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Tell us about yourself</label>
+                                {{ form.message(class="form-control", rows=3) }}
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-hand-thumbs-up"></i> Sign Up to Volunteer
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <p class="text-center mt-3">
+                    <a href="{{ url_for('connect.newcomers') }}" class="text-muted">
+                        <i class="bi bi-arrow-left"></i> Back to Welcome page
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

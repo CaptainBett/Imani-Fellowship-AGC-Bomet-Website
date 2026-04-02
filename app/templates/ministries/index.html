@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Ministries{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <h1 class="section-title text-center section-title-center">Our Ministries</h1>
+        <p class="text-center text-muted mb-5">Discover how you can grow, serve, and connect through our various ministries.</p>
+
+        {% if ministries %}
+        <div class="row g-4">
+            {% for ministry in ministries %}
+            <div class="col-sm-6 col-lg-4">
+                <a href="{{ url_for('ministries.detail', slug=ministry.slug) }}" class="text-decoration-none">
+                    <div class="card h-100">
+                        {% if ministry.image_url %}
+                            <img src="{{ url_for('static', filename=ministry.image_url) }}"
+                                 class="card-img-top" alt="{{ ministry.name }}"
+                                 style="height: 200px; object-fit: cover;" loading="lazy">
+                        {% else %}
+                            <div class="card-img-top bg-primary bg-opacity-10 d-flex align-items-center justify-content-center"
+                                 style="height: 200px;">
+                                <i class="bi {{ ministry.icon }} text-primary" style="font-size: 4rem;"></i>
+                            </div>
+                        {% endif %}
+                        <div class="card-body text-center">
+                            <h5 class="card-title text-dark">{{ ministry.name }}</h5>
+                            {% if ministry.description %}
+                                <p class="card-text text-muted small">{{ ministry.description|truncate(120) }}</p>
+                            {% endif %}
+                            <span class="text-primary small fw-bold">Learn more <i class="bi bi-arrow-right"></i></span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-center text-muted">Ministry information coming soon.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

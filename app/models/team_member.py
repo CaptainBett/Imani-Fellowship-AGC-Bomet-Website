@@ -11,7 +11,7 @@ class TeamMember(db.Model):
     bio = db.Column(db.Text)
     photo_url = db.Column(db.String(500))
     category = db.Column(db.String(50), nullable=False, index=True)  # pastoral, choir, elder
-    ministry_id = db.Column(db.Integer, nullable=True)  # FK to ministries added in Phase 3
+    ministry_id = db.Column(db.Integer, db.ForeignKey('ministries.id'), nullable=True)
     sort_order = db.Column(db.Integer, default=0)
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Fellowships{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <h1 class="section-title text-center section-title-center">Our Fellowships</h1>
+        <p class="text-center text-muted mb-5">Join a fellowship group near you for Bible study, prayer, and community.</p>
+
+        {% if fellowships %}
+        <div class="row g-4">
+            {% for f in fellowships %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100">
+                    {% if f.image_url %}
+                        <img src="{{ url_for('static', filename=f.image_url) }}" class="card-img-top"
+                             alt="{{ f.name }}" style="height: 180px; object-fit: cover;" loading="lazy">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ f.name }}</h5>
+                        {% if f.description %}
+                            <p class="card-text text-muted small">{{ f.description|truncate(150) }}</p>
+                        {% endif %}
+
+                        <ul class="list-unstyled mt-3 small">
+                            {% if f.meeting_day %}
+                            <li class="mb-1">
+                                <i class="bi bi-calendar3 text-primary"></i>
+                                {{ f.meeting_day }}{% if f.meeting_time %} at {{ f.meeting_time }}{% endif %}
+                            </li>
+                            {% endif %}
+                            {% if f.location %}
+                            <li class="mb-1">
+                                <i class="bi bi-geo-alt text-primary"></i> {{ f.location }}
+                            </li>
+                            {% endif %}
+                            {% if f.contact_person %}
+                            <li class="mb-1">
+                                <i class="bi bi-person text-primary"></i> {{ f.contact_person }}
+                                {% if f.contact_phone %} — {{ f.contact_phone }}{% endif %}
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-center text-muted">Fellowship information coming soon.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

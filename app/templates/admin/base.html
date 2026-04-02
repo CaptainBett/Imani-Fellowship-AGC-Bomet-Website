@@ -96,12 +96,14 @@
 
                     <li class="sidebar-heading">Church</li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {% if 'ministries' in request.endpoint %}active{% endif %}"
+                           href="{{ url_for('admin_panel.ministries_list') }}">
                             <i class="bi bi-collection"></i> Ministries
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {% if 'fellowships' in request.endpoint %}active{% endif %}"
+                           href="{{ url_for('admin_panel.fellowships_list') }}">
                             <i class="bi bi-people"></i> Fellowships
                         </a>
                     </li>
@@ -136,12 +138,14 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {% if 'connection_cards' in request.endpoint %}active{% endif %}"
+                           href="{{ url_for('admin_panel.connection_cards_list') }}">
                             <i class="bi bi-person-plus"></i> Connection Cards
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {% if 'volunteers' in request.endpoint %}active{% endif %}"
+                           href="{{ url_for('admin_panel.volunteers_list') }}">
                             <i class="bi bi-hand-thumbs-up"></i> Volunteers
                         </a>
                     </li>

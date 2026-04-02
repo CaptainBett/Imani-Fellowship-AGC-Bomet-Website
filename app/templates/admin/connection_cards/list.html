@@ -1,0 +1,88 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Connection Cards{% endblock %}
+
+{% block admin_content %}
+<h2 class="fw-bold mb-4">Connection Cards</h2>
+
+{% if cards.items %}
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Name</th>
+                    <th>Contact</th>
+                    <th>How They Heard</th>
+                    <th>First Visit</th>
+                    <th>Date</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for card in cards.items %}
+                <tr>
+                    <td><strong>{{ card.name }}</strong></td>
+                    <td>
+                        {% if card.phone %}<i class="bi bi-telephone"></i> {{ card.phone }}<br>{% endif %}
+                        {% if card.email %}<small><i class="bi bi-envelope"></i> {{ card.email }}</small>{% endif %}
+                    </td>
+                    <td class="text-muted">{{ card.how_heard or '—' }}</td>
+                    <td>
+                        {% if card.is_first_visit %}
+                            <span class="badge bg-info">Yes</span>
+                        {% else %}
+                            <span class="badge bg-secondary">No</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-muted">{{ card.created_at.strftime('%b %d, %Y') }}</td>
+                    <td class="text-end">
+                        <form method="POST" action="{{ url_for('admin_panel.connection_cards_delete', id=card.id) }}"
+                              class="d-inline" onsubmit="return confirm('Delete this card?')">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                {% if card.interests or card.prayer_needs %}
+                <tr>
+                    <td colspan="6" class="bg-light small">
+                        {% if card.interests %}<strong>Interests:</strong> {{ card.interests }}<br>{% endif %}
+                        {% if card.prayer_needs %}<strong>Prayer needs:</strong> {{ card.prayer_needs }}{% endif %}
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if cards.pages > 1 %}
+<nav class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if cards.has_prev %}
+            <li class="page-item"><a class="page-link" href="?page={{ cards.prev_num }}">Previous</a></li>
+        {% endif %}
+        {% for p in cards.iter_pages() %}
+            {% if p %}
+                <li class="page-item {% if p == cards.page %}active{% endif %}">
+                    <a class="page-link" href="?page={{ p }}">{{ p }}</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% endif %}
+        {% endfor %}
+        {% if cards.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ cards.next_num }}">Next</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="card p-5 text-center">
+    <i class="bi bi-person-plus text-muted" style="font-size: 3rem;"></i>
+    <p class="text-muted mt-3">No connection cards submitted yet.</p>
+</div>
+{% endif %}
+{% endblock %}

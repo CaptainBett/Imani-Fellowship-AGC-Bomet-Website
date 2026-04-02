@@ -4,12 +4,17 @@ from flask_login import login_required, current_user
 from app.blueprints.admin_panel import admin_bp
 from app.blueprints.admin_panel.forms import (
     AnnouncementForm, EventForm, TeamMemberForm, PageForm, SiteSettingsForm,
+    MinistryForm, MinistryContentForm, FellowshipForm,
 )
 from app.extensions import db
 from app.models.announcement import Announcement
 from app.models.event import Event
 from app.models.team_member import TeamMember
 from app.models.page import Page
+from app.models.ministry import Ministry, MinistryContent
+from app.models.fellowship import Fellowship
+from app.models.connection_card import ConnectionCard
+from app.models.volunteer import VolunteerSignup
 from app.models.site_setting import SiteSetting
 from app.services.uploads import save_image, delete_image
 
@@ -356,3 +361,253 @@ def settings():
     form.twitter_url.data = SiteSetting.get('twitter_url')
 
     return render_template('admin/settings.html', form=form)
+
+
+# ─── Ministries ───────────────────────────────────────────────────────────────
+
+@admin_bp.route('/ministries')
+@login_required
+def ministries_list():
+    ministries = Ministry.query.order_by(Ministry.sort_order, Ministry.name).all()
+    return render_template('admin/ministries/list.html', ministries=ministries)
+
+
+@admin_bp.route('/ministries/create', methods=['GET', 'POST'])
+@login_required
+def ministries_create():
+    form = MinistryForm()
+    if form.validate_on_submit():
+        slug = form.slug.data or form.name.data.lower().replace(' ', '-').replace("'", '')
+        if Ministry.query.filter_by(slug=slug).first():
+            flash('A ministry with this slug already exists.', 'danger')
+            return render_template('admin/ministries/form.html', form=form, editing=False)
+
+        ministry = Ministry(
+            name=form.name.data,
+            slug=slug,
+            description=form.description.data,
+            icon=form.icon.data or 'bi-collection',
+            sort_order=form.sort_order.data or 0,
+            is_active=form.is_active.data,
+        )
+
+        if form.image.data:
+            ministry.image_url = save_image(form.image.data, 'ministries')
+
+        db.session.add(ministry)
+        db.session.commit()
+        flash('Ministry created successfully.', 'success')
+        return redirect(url_for('admin_panel.ministries_list'))
+
+    return render_template('admin/ministries/form.html', form=form, editing=False)
+
+
+@admin_bp.route('/ministries/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+def ministries_edit(id):
+    ministry = Ministry.query.get_or_404(id)
+    form = MinistryForm(obj=ministry)
+
+    if form.validate_on_submit():
+        ministry.name = form.name.data
+        ministry.description = form.description.data
+        ministry.icon = form.icon.data or 'bi-collection'
+        ministry.sort_order = form.sort_order.data or 0
+        ministry.is_active = form.is_active.data
+
+        if form.image.data:
+            delete_image(ministry.image_url)
+            ministry.image_url = save_image(form.image.data, 'ministries')
+
+        db.session.commit()
+        flash('Ministry updated successfully.', 'success')
+        return redirect(url_for('admin_panel.ministries_list'))
+
+    return render_template('admin/ministries/form.html', form=form, editing=True, item=ministry)
+
+
+@admin_bp.route('/ministries/<int:id>/delete', methods=['POST'])
+@login_required
+def ministries_delete(id):
+    ministry = Ministry.query.get_or_404(id)
+    delete_image(ministry.image_url)
+    db.session.delete(ministry)
+    db.session.commit()
+    flash('Ministry deleted.', 'success')
+    return redirect(url_for('admin_panel.ministries_list'))
+
+
+@admin_bp.route('/ministries/<int:id>/content/add', methods=['GET', 'POST'])
+@login_required
+def ministry_content_add(id):
+    ministry = Ministry.query.get_or_404(id)
+    form = MinistryContentForm()
+
+    if form.validate_on_submit():
+        section = MinistryContent(
+            ministry_id=ministry.id,
+            title=form.title.data,
+            body=form.body.data,
+            sort_order=form.sort_order.data or 0,
+        )
+        if form.image.data:
+            section.image_url = save_image(form.image.data, 'ministries')
+        db.session.add(section)
+        db.session.commit()
+        flash('Content section added.', 'success')
+        return redirect(url_for('admin_panel.ministries_edit', id=ministry.id))
+
+    return render_template('admin/ministries/content_form.html', form=form, ministry=ministry, editing=False)
+
+
+@admin_bp.route('/ministries/content/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+def ministry_content_edit(id):
+    section = MinistryContent.query.get_or_404(id)
+    form = MinistryContentForm(obj=section)
+
+    if form.validate_on_submit():
+        section.title = form.title.data
+        section.body = form.body.data
+        section.sort_order = form.sort_order.data or 0
+        if form.image.data:
+            delete_image(section.image_url)
+            section.image_url = save_image(form.image.data, 'ministries')
+        db.session.commit()
+        flash('Content section updated.', 'success')
+        return redirect(url_for('admin_panel.ministries_edit', id=section.ministry_id))
+
+    return render_template('admin/ministries/content_form.html', form=form,
+                           ministry=section.ministry, editing=True, item=section)
+
+
+@admin_bp.route('/ministries/content/<int:id>/delete', methods=['POST'])
+@login_required
+def ministry_content_delete(id):
+    section = MinistryContent.query.get_or_404(id)
+    ministry_id = section.ministry_id
+    delete_image(section.image_url)
+    db.session.delete(section)
+    db.session.commit()
+    flash('Content section removed.', 'success')
+    return redirect(url_for('admin_panel.ministries_edit', id=ministry_id))
+
+
+# ─── Fellowships ──────────────────────────────────────────────────────────────
+
+@admin_bp.route('/fellowships')
+@login_required
+def fellowships_list():
+    fellowships = Fellowship.query.order_by(Fellowship.name).all()
+    return render_template('admin/fellowships/list.html', fellowships=fellowships)
+
+
+@admin_bp.route('/fellowships/create', methods=['GET', 'POST'])
+@login_required
+def fellowships_create():
+    form = FellowshipForm()
+    if form.validate_on_submit():
+        slug = form.slug.data or form.name.data.lower().replace(' ', '-')
+        fellowship = Fellowship(
+            name=form.name.data,
+            slug=slug,
+            description=form.description.data,
+            meeting_day=form.meeting_day.data or None,
+            meeting_time=form.meeting_time.data,
+            location=form.location.data,
+            contact_person=form.contact_person.data,
+            contact_phone=form.contact_phone.data,
+            is_active=form.is_active.data,
+        )
+        if form.image.data:
+            fellowship.image_url = save_image(form.image.data, 'fellowships')
+        db.session.add(fellowship)
+        db.session.commit()
+        flash('Fellowship created successfully.', 'success')
+        return redirect(url_for('admin_panel.fellowships_list'))
+
+    return render_template('admin/fellowships/form.html', form=form, editing=False)
+
+
+@admin_bp.route('/fellowships/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+def fellowships_edit(id):
+    fellowship = Fellowship.query.get_or_404(id)
+    form = FellowshipForm(obj=fellowship)
+
+    if form.validate_on_submit():
+        fellowship.name = form.name.data
+        fellowship.description = form.description.data
+        fellowship.meeting_day = form.meeting_day.data or None
+        fellowship.meeting_time = form.meeting_time.data
+        fellowship.location = form.location.data
+        fellowship.contact_person = form.contact_person.data
+        fellowship.contact_phone = form.contact_phone.data
+        fellowship.is_active = form.is_active.data
+
+        if form.image.data:
+            delete_image(fellowship.image_url)
+            fellowship.image_url = save_image(form.image.data, 'fellowships')
+
+        db.session.commit()
+        flash('Fellowship updated successfully.', 'success')
+        return redirect(url_for('admin_panel.fellowships_list'))
+
+    return render_template('admin/fellowships/form.html', form=form, editing=True, item=fellowship)
+
+
+@admin_bp.route('/fellowships/<int:id>/delete', methods=['POST'])
+@login_required
+def fellowships_delete(id):
+    fellowship = Fellowship.query.get_or_404(id)
+    delete_image(fellowship.image_url)
+    db.session.delete(fellowship)
+    db.session.commit()
+    flash('Fellowship deleted.', 'success')
+    return redirect(url_for('admin_panel.fellowships_list'))
+
+
+# ─── Connection Cards (view only) ────────────────────────────────────────────
+
+@admin_bp.route('/connection-cards')
+@login_required
+def connection_cards_list():
+    page = request.args.get('page', 1, type=int)
+    cards = ConnectionCard.query.order_by(
+        ConnectionCard.created_at.desc()
+    ).paginate(page=page, per_page=20, error_out=False)
+    return render_template('admin/connection_cards/list.html', cards=cards)
+
+
+@admin_bp.route('/connection-cards/<int:id>/delete', methods=['POST'])
+@login_required
+def connection_cards_delete(id):
+    card = ConnectionCard.query.get_or_404(id)
+    db.session.delete(card)
+    db.session.commit()
+    flash('Connection card removed.', 'success')
+    return redirect(url_for('admin_panel.connection_cards_list'))
+
+
+# ─── Volunteer Sign-ups (view only) ──────────────────────────────────────────
+
+@admin_bp.route('/volunteers')
+@login_required
+def volunteers_list():
+    page = request.args.get('page', 1, type=int)
+    signups = VolunteerSignup.query.order_by(
+        VolunteerSignup.created_at.desc()
+    ).paginate(page=page, per_page=20, error_out=False)
+    return render_template('admin/volunteers/list.html', signups=signups)
+
+
+@admin_bp.route('/volunteers/<int:id>/status', methods=['POST'])
+@login_required
+def volunteers_update_status(id):
+    signup = VolunteerSignup.query.get_or_404(id)
+    new_status = request.form.get('status', 'new')
+    if new_status in ('new', 'contacted', 'active'):
+        signup.status = new_status
+        db.session.commit()
+        flash(f'Status updated to {new_status}.', 'success')
+    return redirect(url_for('admin_panel.volunteers_list'))

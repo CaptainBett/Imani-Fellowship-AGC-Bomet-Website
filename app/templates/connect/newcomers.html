@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome — I'm New{% endblock %}
+
+{% block content %}
+<!-- Welcome Hero -->
+<section class="hero-section" style="min-height: 40vh; padding: 3rem 0;">
+    <div class="container text-center">
+        <h1>Welcome to Imani Fellowship!</h1>
+        <p class="lead mt-3 opacity-75">We're so glad you're here. Whether you're visiting for the first time or looking for a church home, there's a place for you.</p>
+    </div>
+</section>
+
+<section class="section-padding">
+    <div class="container">
+        <!-- What to Expect -->
+        <div class="row align-items-center mb-5">
+            <div class="col-lg-6">
+                <h2 class="section-title">What to Expect</h2>
+                <ul class="list-unstyled">
+                    <li class="mb-3">
+                        <i class="bi bi-clock text-primary fs-5 me-2"></i>
+                        <strong>Service Times:</strong> Sunday at 8:00 AM & 10:30 AM
+                    </li>
+                    <li class="mb-3">
+                        <i class="bi bi-geo-alt text-primary fs-5 me-2"></i>
+                        <strong>Location:</strong> Bomet Town, Kenya
+                    </li>
+                    <li class="mb-3">
+                        <i class="bi bi-music-note text-primary fs-5 me-2"></i>
+                        <strong>Worship:</strong> Contemporary and traditional praise & worship
+                    </li>
+                    <li class="mb-3">
+                        <i class="bi bi-book text-primary fs-5 me-2"></i>
+                        <strong>Teaching:</strong> Bible-centered, practical messages
+                    </li>
+                    <li class="mb-3">
+                        <i class="bi bi-emoji-smile text-primary fs-5 me-2"></i>
+                        <strong>Children:</strong> Fun, safe programs during the service
+                    </li>
+                    <li class="mb-3">
+                        <i class="bi bi-cup-hot text-primary fs-5 me-2"></i>
+                        <strong>Fellowship:</strong> Tea and snacks after service — come chat!
+                    </li>
+                </ul>
+            </div>
+            <div class="col-lg-6 text-center">
+                <div class="card bg-light p-5">
+                    <i class="bi bi-heart text-primary" style="font-size: 4rem;"></i>
+                    <h3 class="mt-3">You Belong Here</h3>
+                    <p class="text-muted">Come as you are. No dress code. Just bring an open heart.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Next Steps -->
+        <h2 class="section-title text-center section-title-center">Your Next Steps</h2>
+        <div class="row g-4 text-center mb-5">
+            <div class="col-md-4">
+                <div class="card p-4 h-100">
+                    <div class="rounded-circle bg-primary bg-opacity-10 mx-auto d-flex align-items-center justify-content-center mb-3"
+                         style="width: 80px; height: 80px;">
+                        <span class="text-primary fw-bold fs-3">1</span>
+                    </div>
+                    <h5>Fill a Connection Card</h5>
+                    <p class="text-muted small">Let us know you're here so we can welcome you properly.</p>
+                    <a href="{{ url_for('connect.connection_card') }}" class="btn btn-outline-primary btn-sm">
+                        Fill Card <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-4 h-100">
+                    <div class="rounded-circle bg-primary bg-opacity-10 mx-auto d-flex align-items-center justify-content-center mb-3"
+                         style="width: 80px; height: 80px;">
+                        <span class="text-primary fw-bold fs-3">2</span>
+                    </div>
+                    <h5>Join a Fellowship</h5>
+                    <p class="text-muted small">Get connected with a small group near you for deeper community.</p>
+                    <a href="{{ url_for('ministries.fellowships') }}" class="btn btn-outline-primary btn-sm">
+                        View Fellowships <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-4 h-100">
+                    <div class="rounded-circle bg-primary bg-opacity-10 mx-auto d-flex align-items-center justify-content-center mb-3"
+                         style="width: 80px; height: 80px;">
+                        <span class="text-primary fw-bold fs-3">3</span>
+                    </div>
+                    <h5>Serve with Us</h5>
+                    <p class="text-muted small">Use your gifts and talents to make a difference in our community.</p>
+                    <a href="{{ url_for('connect.volunteer') }}" class="btn btn-outline-primary btn-sm">
+                        Volunteer <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

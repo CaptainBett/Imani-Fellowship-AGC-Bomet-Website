@@ -1,0 +1,89 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ 'Edit' if editing else 'New' }} Fellowship{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">{{ 'Edit' if editing else 'New' }} Fellowship</h2>
+    <a href="{{ url_for('admin_panel.fellowships_list') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+</div>
+
+<div class="card p-4">
+    <form method="POST" enctype="multipart/form-data"
+          action="{{ url_for('admin_panel.fellowships_edit', id=item.id) if editing else url_for('admin_panel.fellowships_create') }}">
+        {{ form.hidden_tag() }}
+
+        <div class="row">
+            <div class="col-md-8 mb-3">
+                <label class="form-label fw-bold">Fellowship Name</label>
+                {{ form.name(class="form-control", placeholder="e.g. Berea Fellowship") }}
+                {% for error in form.name.errors %}
+                    <div class="text-danger small mt-1">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label fw-bold">URL Slug</label>
+                {{ form.slug(class="form-control", placeholder="auto-generated") }}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Description</label>
+            {{ form.description(class="form-control", rows=3, placeholder="About this fellowship") }}
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label fw-bold">Meeting Day</label>
+                {{ form.meeting_day(class="form-select") }}
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label fw-bold">Meeting Time</label>
+                {{ form.meeting_time(class="form-control", placeholder="e.g. 6:00 PM") }}
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label fw-bold">Location</label>
+                {{ form.location(class="form-control", placeholder="Meeting venue") }}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Contact Person</label>
+                {{ form.contact_person(class="form-control", placeholder="Fellowship leader name") }}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Contact Phone</label>
+                {{ form.contact_phone(class="form-control", placeholder="+254 7XX XXX XXX") }}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Fellowship Image</label>
+            {% if editing and item.image_url %}
+                <div class="mb-2">
+                    <img src="{{ url_for('static', filename=item.image_url) }}" alt="{{ item.name }}"
+                         class="img-thumbnail" style="max-height: 150px;">
+                </div>
+            {% endif %}
+            {{ form.image(class="form-control") }}
+        </div>
+
+        <div class="mb-4">
+            <div class="form-check">
+                {{ form.is_active(class="form-check-input", id="is_active") }}
+                <label class="form-check-label" for="is_active">Active (visible on site)</label>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-circle"></i> {{ 'Update' if editing else 'Create' }} Fellowship
+            </button>
+            <a href="{{ url_for('admin_panel.fellowships_list') }}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

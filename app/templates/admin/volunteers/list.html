@@ -1,0 +1,84 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Volunteer Sign-ups{% endblock %}
+
+{% block admin_content %}
+<h2 class="fw-bold mb-4">Volunteer Sign-ups</h2>
+
+{% if signups.items %}
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Name</th>
+                    <th>Contact</th>
+                    <th>Ministry</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in signups.items %}
+                <tr>
+                    <td>
+                        <strong>{{ s.name }}</strong>
+                        {% if s.message %}
+                            <br><small class="text-muted">{{ s.message|truncate(60) }}</small>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <i class="bi bi-telephone"></i> {{ s.phone }}
+                        {% if s.email %}<br><small><i class="bi bi-envelope"></i> {{ s.email }}</small>{% endif %}
+                    </td>
+                    <td>{{ s.ministry.name if s.ministry else '—' }}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for('admin_panel.volunteers_update_status', id=s.id) }}" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <select name="status" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                                <option value="new" {% if s.status == 'new' %}selected{% endif %}>New</option>
+                                <option value="contacted" {% if s.status == 'contacted' %}selected{% endif %}>Contacted</option>
+                                <option value="active" {% if s.status == 'active' %}selected{% endif %}>Active</option>
+                            </select>
+                        </form>
+                    </td>
+                    <td class="text-muted">{{ s.created_at.strftime('%b %d, %Y') }}</td>
+                    <td class="text-end">
+                        <!-- View-only, no delete needed -->
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if signups.pages > 1 %}
+<nav class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if signups.has_prev %}
+            <li class="page-item"><a class="page-link" href="?page={{ signups.prev_num }}">Previous</a></li>
+        {% endif %}
+        {% for p in signups.iter_pages() %}
+            {% if p %}
+                <li class="page-item {% if p == signups.page %}active{% endif %}">
+                    <a class="page-link" href="?page={{ p }}">{{ p }}</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% endif %}
+        {% endfor %}
+        {% if signups.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ signups.next_num }}">Next</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="card p-5 text-center">
+    <i class="bi bi-hand-thumbs-up text-muted" style="font-size: 3rem;"></i>
+    <p class="text-muted mt-3">No volunteer sign-ups yet.</p>
+</div>
+{% endif %}
+{% endblock %}

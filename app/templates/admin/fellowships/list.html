@@ -1,0 +1,67 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Fellowships{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">Fellowships</h2>
+    <a href="{{ url_for('admin_panel.fellowships_create') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> New Fellowship
+    </a>
+</div>
+
+{% if fellowships %}
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Name</th>
+                    <th>Meeting</th>
+                    <th>Location</th>
+                    <th>Contact</th>
+                    <th>Status</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for f in fellowships %}
+                <tr>
+                    <td><strong>{{ f.name }}</strong></td>
+                    <td>
+                        {% if f.meeting_day %}{{ f.meeting_day }}{% endif %}
+                        {% if f.meeting_time %} at {{ f.meeting_time }}{% endif %}
+                        {% if not f.meeting_day and not f.meeting_time %}—{% endif %}
+                    </td>
+                    <td class="text-muted">{{ f.location or '—' }}</td>
+                    <td class="text-muted">{{ f.contact_person or '—' }}</td>
+                    <td>
+                        {% if f.is_active %}
+                            <span class="badge bg-success">Active</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        <a href="{{ url_for('admin_panel.fellowships_edit', id=f.id) }}"
+                           class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                        <form method="POST" action="{{ url_for('admin_panel.fellowships_delete', id=f.id) }}"
+                              class="d-inline" onsubmit="return confirm('Delete this fellowship?')">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="card p-5 text-center">
+    <i class="bi bi-people text-muted" style="font-size: 3rem;"></i>
+    <p class="text-muted mt-3">No fellowships yet.</p>
+    <a href="{{ url_for('admin_panel.fellowships_create') }}" class="btn btn-primary">Add your first fellowship</a>
+</div>
+{% endif %}
+{% endblock %}

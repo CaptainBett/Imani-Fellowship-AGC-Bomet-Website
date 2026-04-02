@@ -89,3 +89,52 @@ class SiteSettingsForm(FlaskForm):
     instagram_url = StringField('Instagram URL', validators=[Optional(), Length(max=500)])
     twitter_url = StringField('Twitter/X URL', validators=[Optional(), Length(max=500)])
     submit = SubmitField('Save Settings')
+
+
+# --- Ministries ---
+
+class MinistryForm(FlaskForm):
+    name = StringField('Ministry Name', validators=[DataRequired(), Length(max=100)])
+    slug = StringField('URL Slug', validators=[Optional(), Length(max=100)])
+    description = TextAreaField('Description', validators=[Optional()])
+    image = FileField('Ministry Image', validators=[
+        FileAllowed(['jpg', 'jpeg', 'png', 'webp', 'gif'], 'Images only!')
+    ])
+    icon = StringField('Bootstrap Icon Class', validators=[Optional(), Length(max=50)],
+                       default='bi-collection')
+    sort_order = IntegerField('Display Order', default=0, validators=[Optional()])
+    is_active = BooleanField('Active', default=True)
+    submit = SubmitField('Save')
+
+
+class MinistryContentForm(FlaskForm):
+    title = StringField('Section Title', validators=[Optional(), Length(max=200)])
+    body = TextAreaField('Content', validators=[Optional()])
+    image = FileField('Section Image', validators=[
+        FileAllowed(['jpg', 'jpeg', 'png', 'webp', 'gif'], 'Images only!')
+    ])
+    sort_order = IntegerField('Display Order', default=0, validators=[Optional()])
+    submit = SubmitField('Save Section')
+
+
+# --- Fellowships ---
+
+class FellowshipForm(FlaskForm):
+    name = StringField('Fellowship Name', validators=[DataRequired(), Length(max=100)])
+    slug = StringField('URL Slug', validators=[Optional(), Length(max=100)])
+    description = TextAreaField('Description', validators=[Optional()])
+    meeting_day = SelectField('Meeting Day', choices=[
+        ('', 'Select day'),
+        ('Monday', 'Monday'), ('Tuesday', 'Tuesday'), ('Wednesday', 'Wednesday'),
+        ('Thursday', 'Thursday'), ('Friday', 'Friday'), ('Saturday', 'Saturday'),
+        ('Sunday', 'Sunday'),
+    ], validators=[Optional()])
+    meeting_time = StringField('Meeting Time', validators=[Optional(), Length(max=50)])
+    location = StringField('Location', validators=[Optional(), Length(max=200)])
+    contact_person = StringField('Contact Person', validators=[Optional(), Length(max=100)])
+    contact_phone = StringField('Contact Phone', validators=[Optional(), Length(max=20)])
+    image = FileField('Fellowship Image', validators=[
+        FileAllowed(['jpg', 'jpeg', 'png', 'webp', 'gif'], 'Images only!')
+    ])
+    is_active = BooleanField('Active', default=True)
+    submit = SubmitField('Save')
