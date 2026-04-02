@@ -1,0 +1,92 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Prayer Request #{{ pr.id }}{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Prayer Request #{{ pr.id }}</h2>
+    <a href="{{ url_for('admin_panel.prayer_requests_list') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+</div>
+
+<div class="row g-4">
+    <!-- Request Details -->
+    <div class="col-lg-8">
+        <div class="card p-4">
+            <div class="d-flex justify-content-between mb-3">
+                <div>
+                    <h5 class="fw-bold mb-1">{{ pr.display_name }}</h5>
+                    <small class="text-muted">Submitted {{ pr.created_at.strftime('%d %B %Y at %I:%M %p') }}</small>
+                </div>
+                <div>
+                    {% if pr.status == 'new' %}
+                        <span class="badge bg-warning text-dark fs-6">New</span>
+                    {% elif pr.status == 'praying' %}
+                        <span class="badge bg-info fs-6">Praying</span>
+                    {% else %}
+                        <span class="badge bg-success fs-6">Answered</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if pr.email or pr.phone %}
+            <div class="mb-3 p-2 bg-light rounded">
+                {% if pr.email %}<small class="me-3"><i class="bi bi-envelope"></i> {{ pr.email }}</small>{% endif %}
+                {% if pr.phone %}<small><i class="bi bi-telephone"></i> {{ pr.phone }}</small>{% endif %}
+            </div>
+            {% endif %}
+
+            <div class="mb-3">
+                <span class="badge {% if pr.is_anonymous %}bg-secondary{% else %}bg-light text-dark{% endif %} me-1">
+                    {{ 'Anonymous' if pr.is_anonymous else 'Named' }}
+                </span>
+                <span class="badge {% if pr.is_public %}bg-success{% else %}bg-light text-dark{% endif %}">
+                    {{ 'Public' if pr.is_public else 'Private' }}
+                </span>
+            </div>
+
+            <hr>
+            <div class="fs-5">
+                {{ pr.request }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions Sidebar -->
+    <div class="col-lg-4">
+        <!-- Update Status -->
+        <div class="card p-3 mb-3">
+            <h6 class="fw-bold mb-2">Update Status</h6>
+            <form method="POST" action="{{ url_for('admin_panel.prayer_requests_update_status', id=pr.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="d-flex gap-2">
+                    <button name="status" value="new" class="btn btn-sm {% if pr.status == 'new' %}btn-warning{% else %}btn-outline-warning{% endif %} flex-fill">New</button>
+                    <button name="status" value="praying" class="btn btn-sm {% if pr.status == 'praying' %}btn-info{% else %}btn-outline-info{% endif %} flex-fill">Praying</button>
+                    <button name="status" value="answered" class="btn btn-sm {% if pr.status == 'answered' %}btn-success{% else %}btn-outline-success{% endif %} flex-fill">Answered</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Internal Notes -->
+        <div class="card p-3 mb-3">
+            <h6 class="fw-bold mb-2">Internal Notes</h6>
+            <form method="POST" action="{{ url_for('admin_panel.prayer_requests_update_notes', id=pr.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <textarea name="notes" class="form-control mb-2" rows="4"
+                          placeholder="Private notes for the prayer team...">{{ pr.notes or '' }}</textarea>
+                <button type="submit" class="btn btn-sm btn-primary w-100">Save Notes</button>
+            </form>
+        </div>
+
+        <!-- Delete -->
+        <form method="POST" action="{{ url_for('admin_panel.prayer_requests_delete', id=pr.id) }}"
+              onsubmit="return confirm('Delete this prayer request?')">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-sm btn-outline-danger w-100">
+                <i class="bi bi-trash"></i> Delete Request
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

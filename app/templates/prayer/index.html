@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Prayer Request{% endblock %}
+{% block meta_description %}Submit a prayer request to the Imani Fellowship AGC Bomet prayer team.{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<section class="hero-section" style="min-height: 30vh; padding: 3rem 0;">
+    <div class="container text-center">
+        <h1><i class="bi bi-chat-heart"></i> Prayer Request</h1>
+        <p class="lead">"Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God." — Philippians 4:6</p>
+    </div>
+</section>
+
+<section class="section-padding">
+    <div class="container">
+        <div class="row g-5">
+            <!-- Prayer Request Form -->
+            <div class="col-lg-7">
+                <div class="card shadow-sm p-4">
+                    <h3 class="fw-bold mb-3">Share Your Prayer Request</h3>
+                    <p class="text-muted">Our prayer team will receive your request and pray for you. You may submit anonymously if you prefer.</p>
+
+                    <div id="prayer-form-area">
+                        <form method="POST" hx-post="{{ url_for('prayer.prayer_request') }}"
+                              hx-target="#prayer-form-area" hx-swap="innerHTML">
+                            {{ form.hidden_tag() }}
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Your Name</label>
+                                {{ form.name(class="form-control", placeholder="Optional — leave blank if anonymous") }}
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Email</label>
+                                    {{ form.email(class="form-control", placeholder="For follow-up (optional)") }}
+                                    {% for error in form.email.errors %}
+                                        <div class="text-danger small">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Phone</label>
+                                    {{ form.phone(class="form-control", placeholder="Optional") }}
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Prayer Request <span class="text-danger">*</span></label>
+                                {{ form.request(class="form-control", rows=5, placeholder="Share what you'd like us to pray about...") }}
+                                {% for error in form.request.errors %}
+                                    <div class="text-danger small">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    {{ form.is_anonymous(class="form-check-input") }}
+                                    <label class="form-check-label">Submit anonymously</label>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="form-check">
+                                    {{ form.is_public(class="form-check-input") }}
+                                    <label class="form-check-label">Allow this request to be shared on the prayer wall</label>
+                                </div>
+                                <small class="text-muted">If checked, your request (without contact details) may be shown publicly so others can pray with you.</small>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="bi bi-send"></i> Submit Prayer Request
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prayer Wall -->
+            <div class="col-lg-5">
+                <h3 class="fw-bold mb-3"><i class="bi bi-people"></i> Prayer Wall</h3>
+                <p class="text-muted">Join us in praying for these requests from our church family.</p>
+
+                {% if public_requests %}
+                    {% for pr in public_requests %}
+                    <div class="card mb-3 p-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <strong>{{ pr.display_name }}</strong>
+                                {% if pr.status == 'answered' %}
+                                    <span class="badge bg-success ms-1">Answered!</span>
+                                {% elif pr.status == 'praying' %}
+                                    <span class="badge bg-info ms-1">Praying</span>
+                                {% endif %}
+                            </div>
+                            <small class="text-muted">{{ pr.created_at.strftime('%d %b') }}</small>
+                        </div>
+                        <p class="mb-0 mt-2 small">{{ pr.request[:200] }}{% if pr.request|length > 200 %}...{% endif %}</p>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-chat-heart" style="font-size: 2rem;"></i>
+                        <p class="mt-2">No public prayer requests yet. Be the first to share.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

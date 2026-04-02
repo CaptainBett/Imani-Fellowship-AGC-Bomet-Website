@@ -47,6 +47,12 @@ def create_app(config_name=None):
     from app.blueprints.api import api_bp
     app.register_blueprint(api_bp)
 
+    from app.blueprints.prayer import prayer_bp
+    app.register_blueprint(prayer_bp)
+
+    from app.blueprints.events import events_bp
+    app.register_blueprint(events_bp)
+
     # Import models so Flask-Migrate can detect them
     from app import models  # noqa: F401
 

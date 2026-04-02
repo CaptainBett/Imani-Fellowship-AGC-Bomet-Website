@@ -1,0 +1,50 @@
+<!-- Calendar partial — swapped by HTMX on month navigation -->
+<div class="card p-3">
+    <!-- Month Navigation -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <button class="btn btn-sm btn-outline-primary"
+                hx-get="{{ url_for('events.events_index', year=prev_year, month=prev_month) }}"
+                hx-target="#calendar-container" hx-swap="innerHTML">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+        <h4 class="fw-bold mb-0">{{ month_name }} {{ year }}</h4>
+        <button class="btn btn-sm btn-outline-primary"
+                hx-get="{{ url_for('events.events_index', year=next_year, month=next_month) }}"
+                hx-target="#calendar-container" hx-swap="innerHTML">
+            <i class="bi bi-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- Calendar Grid -->
+    <table class="table cal-table mb-0">
+        <thead>
+            <tr>
+                <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for week in month_days %}
+            <tr>
+                {% for day in week %}
+                <td class="cal-day {% if day == 0 %}empty{% endif %} {% if day == today.day and month == today.month and year == today.year %}today{% endif %}">
+                    {% if day != 0 %}
+                        <strong>{{ day }}</strong>
+                        {% if day in events_by_day %}
+                            {% for ev in events_by_day[day][:2] %}
+                                <a href="{{ url_for('events.event_detail', id=ev.id) }}" class="cal-event"
+                                   title="{{ ev.title }}">
+                                    {{ ev.title[:15] }}
+                                </a>
+                            {% endfor %}
+                            {% if events_by_day[day]|length > 2 %}
+                                <small class="text-muted">+{{ events_by_day[day]|length - 2 }} more</small>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

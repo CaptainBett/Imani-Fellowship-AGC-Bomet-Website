@@ -19,6 +19,7 @@ from app.models.volunteer import VolunteerSignup
 from app.models.sermon import Sermon
 from app.models.media import MediaItem
 from app.models.giving import GivingCategory, Donation
+from app.models.prayer_request import PrayerRequest
 from app.models.site_setting import SiteSetting
 from app.services.uploads import save_image, delete_image
 
@@ -891,3 +892,59 @@ def donations_list():
         total_completed=total_completed,
         total_count=total_count,
     )
+
+
+# ─── Prayer Requests ─────────────────────────────────────────────────────────
+
+@admin_bp.route('/prayer-requests')
+@login_required
+def prayer_requests_list():
+    page = request.args.get('page', 1, type=int)
+    status = request.args.get('status', '')
+    query = PrayerRequest.query
+    if status in ('new', 'praying', 'answered'):
+        query = query.filter_by(status=status)
+    requests_list = query.order_by(PrayerRequest.created_at.desc()).paginate(
+        page=page, per_page=20, error_out=False
+    )
+    return render_template('admin/prayer_requests/list.html',
+                           requests=requests_list, current_status=status)
+
+
+@admin_bp.route('/prayer-requests/<int:id>')
+@login_required
+def prayer_requests_detail(id):
+    pr = PrayerRequest.query.get_or_404(id)
+    return render_template('admin/prayer_requests/detail.html', pr=pr)
+
+
+@admin_bp.route('/prayer-requests/<int:id>/status', methods=['POST'])
+@login_required
+def prayer_requests_update_status(id):
+    pr = PrayerRequest.query.get_or_404(id)
+    new_status = request.form.get('status', 'new')
+    if new_status in ('new', 'praying', 'answered'):
+        pr.status = new_status
+        db.session.commit()
+        flash(f'Status updated to {new_status}.', 'success')
+    return redirect(url_for('admin_panel.prayer_requests_detail', id=id))
+
+
+@admin_bp.route('/prayer-requests/<int:id>/notes', methods=['POST'])
+@login_required
+def prayer_requests_update_notes(id):
+    pr = PrayerRequest.query.get_or_404(id)
+    pr.notes = request.form.get('notes', '')
+    db.session.commit()
+    flash('Notes saved.', 'success')
+    return redirect(url_for('admin_panel.prayer_requests_detail', id=id))
+
+
+@admin_bp.route('/prayer-requests/<int:id>/delete', methods=['POST'])
+@login_required
+def prayer_requests_delete(id):
+    pr = PrayerRequest.query.get_or_404(id)
+    db.session.delete(pr)
+    db.session.commit()
+    flash('Prayer request removed.', 'success')
+    return redirect(url_for('admin_panel.prayer_requests_list'))

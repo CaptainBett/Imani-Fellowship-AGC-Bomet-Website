@@ -11,9 +11,10 @@ from app.models.volunteer import VolunteerSignup
 from app.models.sermon import Sermon
 from app.models.media import MediaItem
 from app.models.giving import GivingCategory, Donation
+from app.models.prayer_request import PrayerRequest
 
 __all__ = [
     'User', 'SiteSetting', 'Announcement', 'Event', 'TeamMember', 'Page',
     'Ministry', 'MinistryContent', 'Fellowship', 'ConnectionCard', 'VolunteerSignup',
-    'Sermon', 'MediaItem', 'GivingCategory', 'Donation',
+    'Sermon', 'MediaItem', 'GivingCategory', 'Donation', 'PrayerRequest',
 ]

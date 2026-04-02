@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}{{ event.title }}{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb" class="mb-3">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ url_for('main.home') }}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{{ url_for('events.events_index') }}">Events</a></li>
+                        <li class="breadcrumb-item active">{{ event.title }}</li>
+                    </ol>
+                </nav>
+
+                {% if event.image_url %}
+                    <img src="{{ url_for('static', filename=event.image_url) }}"
+                         class="img-fluid rounded mb-4 shadow-sm" alt="{{ event.title }}">
+                {% endif %}
+
+                <h1>{{ event.title }}</h1>
+
+                <div class="d-flex flex-wrap gap-3 text-muted mb-4">
+                    <span><i class="bi bi-calendar"></i> {{ event.formatted_date }}</span>
+                    <span><i class="bi bi-clock"></i> {{ event.formatted_time }}{% if event.end_datetime %} — {{ event.end_datetime.strftime('%I:%M %p') }}{% endif %}</span>
+                    {% if event.location %}
+                        <span><i class="bi bi-geo-alt"></i> {{ event.location }}</span>
+                    {% endif %}
+                </div>
+
+                {% if event.is_recurring %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-arrow-repeat"></i> This is a recurring event
+                        {% if event.recurrence_rule %}({{ event.recurrence_rule|lower }}){% endif %}.
+                    </div>
+                {% endif %}
+
+                {% if event.description %}
+                <div class="mt-3">
+                    {{ event.description|safe }}
+                </div>
+                {% endif %}
+
+                <div class="mt-4">
+                    <a href="{{ url_for('events.events_index') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-left"></i> Back to Events
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

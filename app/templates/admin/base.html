@@ -136,7 +136,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {% if 'prayer' in request.endpoint %}active{% endif %}"
+                           href="{{ url_for('admin_panel.prayer_requests_list') }}">
                             <i class="bi bi-chat-dots"></i> Prayer Requests
                         </a>
                     </li>
