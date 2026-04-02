@@ -43,8 +43,15 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('ministries.fellowships') }}">Fellowships</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Sermons</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Media
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('media.sermons_index') }}">Sermons & Devotionals</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('media.gallery_index') }}">Photo & Video Gallery</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('media.choir') }}">Choir</a></li>
+                        </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Events</a>
@@ -62,7 +69,7 @@
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn btn-warning text-dark fw-bold ms-lg-2 px-3" href="#">
+                        <a class="nav-link btn-give ms-lg-2" href="{{ url_for('giving.give') }}">
                             <i class="bi bi-heart-fill"></i> Give
                         </a>
                     </li>
@@ -112,12 +119,12 @@
                     <h5 class="fw-bold">Quick Links</h5>
                     <ul class="list-unstyled">
                         <li><a href="{{ url_for('main.about') }}" class="text-muted text-decoration-none">About Us</a></li>
-                        <li><a href="#" class="text-muted text-decoration-none">Ministries</a></li>
-                        <li><a href="#" class="text-muted text-decoration-none">Events</a></li>
-                        <li><a href="#" class="text-muted text-decoration-none">Sermons</a></li>
-                        <li><a href="#" class="text-muted text-decoration-none">Give</a></li>
+                        <li><a href="{{ url_for('ministries.index') }}" class="text-muted text-decoration-none">Ministries</a></li>
+                        <li><a href="{{ url_for('media.sermons_index') }}" class="text-muted text-decoration-none">Sermons</a></li>
+                        <li><a href="{{ url_for('media.gallery_index') }}" class="text-muted text-decoration-none">Gallery</a></li>
+                        <li><a href="{{ url_for('giving.give') }}" class="text-muted text-decoration-none">Give</a></li>
                         <li><a href="#" class="text-muted text-decoration-none">Prayer Request</a></li>
-                        <li><a href="#" class="text-muted text-decoration-none">I'm New</a></li>
+                        <li><a href="{{ url_for('connect.newcomers') }}" class="text-muted text-decoration-none">I'm New</a></li>
                     </ul>
                 </div>
 

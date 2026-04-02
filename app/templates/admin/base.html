@@ -83,7 +83,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {% if 'sermons' in request.endpoint %}active{% endif %}"
+                           href="{{ url_for('admin_panel.sermons_list') }}">
                             <i class="bi bi-journal-text"></i> Sermons & Devotionals
                         </a>
                     </li>
@@ -121,14 +122,16 @@
 
                     <li class="sidebar-heading">Media</li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {% if 'gallery' in request.endpoint %}active{% endif %}"
+                           href="{{ url_for('admin_panel.gallery_list') }}">
                             <i class="bi bi-images"></i> Gallery
                         </a>
                     </li>
 
                     <li class="sidebar-heading">Engagement</li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {% if 'giving' in request.endpoint or 'donations' in request.endpoint %}active{% endif %}"
+                           href="{{ url_for('admin_panel.donations_list') }}">
                             <i class="bi bi-heart"></i> Donations
                         </a>
                     </li>

@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Give{% endblock %}
+{% block meta_description %}Support Imani Fellowship AGC Bomet through M-Pesa giving — tithes, offerings, missions, and building fund.{% endblock %}
+
+{% block extra_css %}
+<style>
+    .giving-card {
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: border-color 0.2s, transform 0.2s;
+    }
+    .giving-card:hover, .giving-card.selected {
+        border-color: var(--imani-secondary);
+        transform: translateY(-2px);
+    }
+    .giving-card.selected {
+        background-color: #fdf8e8;
+    }
+    .amount-btn {
+        min-width: 80px;
+    }
+    .amount-btn.active {
+        background-color: var(--imani-primary) !important;
+        color: white !important;
+        border-color: var(--imani-primary) !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<section class="hero-section" style="min-height: 30vh; padding: 3rem 0;">
+    <div class="container text-center">
+        <h1><i class="bi bi-heart-fill"></i> Give</h1>
+        <p class="lead">"Each of you should give what you have decided in your heart to give, not reluctantly or under compulsion, for God loves a cheerful giver." — 2 Corinthians 9:7</p>
+    </div>
+</section>
+
+<section class="section-padding">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+
+                <div class="card shadow-sm p-4">
+                    <h3 class="fw-bold mb-4 text-center">M-Pesa Giving</h3>
+
+                    <!-- Step 1: Category -->
+                    {% if categories %}
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">1. Choose a giving category</label>
+                        <div class="row g-2" id="category-grid">
+                            {% for cat in categories %}
+                            <div class="col-6 col-md-4">
+                                <div class="card giving-card text-center p-3"
+                                     data-category-id="{{ cat.id }}"
+                                     onclick="selectCategory(this, {{ cat.id }}, '{{ cat.name }}')">
+                                    <i class="bi bi-heart text-primary fs-4"></i>
+                                    <strong class="d-block mt-1">{{ cat.name }}</strong>
+                                    {% if cat.description %}
+                                        <small class="text-muted">{{ cat.description[:50] }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Step 2: Amount -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">{% if categories %}2.{% else %}1.{% endif %} Enter amount (KES)</label>
+                        <div class="d-flex flex-wrap gap-2 mb-2">
+                            <button type="button" class="btn btn-outline-primary amount-btn" onclick="setAmount(100)">100</button>
+                            <button type="button" class="btn btn-outline-primary amount-btn" onclick="setAmount(200)">200</button>
+                            <button type="button" class="btn btn-outline-primary amount-btn" onclick="setAmount(500)">500</button>
+                            <button type="button" class="btn btn-outline-primary amount-btn" onclick="setAmount(1000)">1,000</button>
+                            <button type="button" class="btn btn-outline-primary amount-btn" onclick="setAmount(2000)">2,000</button>
+                            <button type="button" class="btn btn-outline-primary amount-btn" onclick="setAmount(5000)">5,000</button>
+                        </div>
+                        <input type="number" id="amount" class="form-control form-control-lg"
+                               placeholder="Or enter custom amount" min="1" required>
+                    </div>
+
+                    <!-- Step 3: Phone -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">{% if categories %}3.{% else %}2.{% endif %} M-Pesa phone number</label>
+                        <input type="tel" id="phone" class="form-control form-control-lg"
+                               placeholder="0712345678" maxlength="13" required>
+                        <small class="text-muted">You'll receive an STK push on this number.</small>
+                    </div>
+
+                    <!-- Optional: Name -->
+                    <div class="mb-4">
+                        <label class="form-label">Name (optional)</label>
+                        <input type="text" id="donor_name" class="form-control"
+                               placeholder="Your name for our records">
+                    </div>
+
+                    <!-- Submit -->
+                    <button type="button" id="give-btn" class="btn btn-primary btn-lg w-100"
+                            onclick="submitGiving()">
+                        <i class="bi bi-phone"></i> Send M-Pesa Prompt
+                    </button>
+
+                    <!-- Status area (HTMX will update this) -->
+                    <div id="payment-status" class="mt-4"></div>
+                </div>
+
+                <!-- Alternative Giving Methods -->
+                <div class="card shadow-sm p-4 mt-4">
+                    <h5 class="fw-bold">Other Ways to Give</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="border rounded p-3">
+                                <h6 class="fw-bold"><i class="bi bi-phone"></i> M-Pesa Paybill</h6>
+                                <p class="mb-1">Paybill Number: <strong>{{ config.MPESA_SHORTCODE }}</strong></p>
+                                <p class="mb-0">Account: <em>Your Name</em></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border rounded p-3">
+                                <h6 class="fw-bold"><i class="bi bi-cash-stack"></i> In Person</h6>
+                                <p class="mb-0">Give during our Sunday services or visit the church office on weekdays.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let selectedCategoryId = '';
+
+function selectCategory(el, id, name) {
+    // Deselect all
+    document.querySelectorAll('.giving-card').forEach(c => c.classList.remove('selected'));
+    // Select this one
+    el.classList.add('selected');
+    selectedCategoryId = id;
+}
+
+function setAmount(val) {
+    document.getElementById('amount').value = val;
+    // Highlight active button
+    document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+}
+
+function submitGiving() {
+    const amount = document.getElementById('amount').value;
+    const phone = document.getElementById('phone').value;
+    const donorName = document.getElementById('donor_name').value;
+    const btn = document.getElementById('give-btn');
+    const statusDiv = document.getElementById('payment-status');
+
+    if (!amount || parseInt(amount) < 1) {
+        statusDiv.innerHTML = '<div class="alert alert-warning">Please enter a valid amount.</div>';
+        return;
+    }
+    if (!phone || phone.length < 9) {
+        statusDiv.innerHTML = '<div class="alert alert-warning">Please enter a valid phone number.</div>';
+        return;
+    }
+
+    // Disable button and show loading
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Sending...';
+    statusDiv.innerHTML = '';
+
+    // Build form data
+    const formData = new FormData();
+    formData.append('phone', phone);
+    formData.append('amount', amount);
+    formData.append('donor_name', donorName);
+    if (selectedCategoryId) {
+        formData.append('category_id', selectedCategoryId);
+    }
+
+    // Get CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}';
+
+    fetch('/api/mpesa/stk-push', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrfToken },
+        body: formData,
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            // Show polling status — HTMX will auto-poll every 3s
+            statusDiv.innerHTML = `
+                <div class="alert alert-info" hx-get="/api/mpesa/status/${data.checkout_request_id}"
+                     hx-trigger="every 3s" hx-swap="outerHTML">
+                    <div class="d-flex align-items-center">
+                        <div class="spinner-border spinner-border-sm me-3" role="status"></div>
+                        <div>
+                            <strong>Waiting for payment...</strong><br>
+                            <small>Check your phone for the M-Pesa prompt and enter your PIN.</small>
+                        </div>
+                    </div>
+                </div>
+            `;
+            // Tell HTMX to process the new content
+            htmx.process(statusDiv);
+        } else {
+            statusDiv.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+        }
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-phone"></i> Send M-Pesa Prompt';
+    })
+    .catch(err => {
+        statusDiv.innerHTML = '<div class="alert alert-danger">Network error. Please try again.</div>';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-phone"></i> Send M-Pesa Prompt';
+    });
+}
+</script>
+{% endblock %}

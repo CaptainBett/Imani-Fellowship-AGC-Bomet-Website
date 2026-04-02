@@ -4,7 +4,8 @@ from flask_login import login_required, current_user
 from app.blueprints.admin_panel import admin_bp
 from app.blueprints.admin_panel.forms import (
     AnnouncementForm, EventForm, TeamMemberForm, PageForm, SiteSettingsForm,
-    MinistryForm, MinistryContentForm, FellowshipForm,
+    MinistryForm, MinistryContentForm, FellowshipForm, SermonForm, MediaItemForm,
+    GivingCategoryForm,
 )
 from app.extensions import db
 from app.models.announcement import Announcement
@@ -15,6 +16,9 @@ from app.models.ministry import Ministry, MinistryContent
 from app.models.fellowship import Fellowship
 from app.models.connection_card import ConnectionCard
 from app.models.volunteer import VolunteerSignup
+from app.models.sermon import Sermon
+from app.models.media import MediaItem
+from app.models.giving import GivingCategory, Donation
 from app.models.site_setting import SiteSetting
 from app.services.uploads import save_image, delete_image
 
@@ -30,11 +34,17 @@ def dashboard():
         Event.start_datetime > datetime.now(timezone.utc),
     ).count()
     team_count = TeamMember.query.filter_by(is_active=True).count()
+    sermon_count = Sermon.query.filter_by(is_published=True).count()
+    media_count = MediaItem.query.filter_by(is_published=True).count()
+    donation_count = Donation.query.filter_by(status='completed').count()
     return render_template(
         'admin/dashboard.html',
         announcement_count=announcement_count,
         event_count=event_count,
         team_count=team_count,
+        sermon_count=sermon_count,
+        media_count=media_count,
+        donation_count=donation_count,
     )
 
 
@@ -611,3 +621,273 @@ def volunteers_update_status(id):
         db.session.commit()
         flash(f'Status updated to {new_status}.', 'success')
     return redirect(url_for('admin_panel.volunteers_list'))
+
+
+# ─── Sermons & Devotionals ───────────────────────────────────────────────────
+
+@admin_bp.route('/sermons')
+@login_required
+def sermons_list():
+    page = request.args.get('page', 1, type=int)
+    content_type = request.args.get('type', '')
+    query = Sermon.query
+    if content_type in ('sermon', 'devotional', 'note'):
+        query = query.filter_by(content_type=content_type)
+    sermons = query.order_by(Sermon.sermon_date.desc().nullslast(), Sermon.created_at.desc()).paginate(
+        page=page, per_page=20, error_out=False
+    )
+    return render_template('admin/sermons/list.html', sermons=sermons, current_type=content_type)
+
+
+@admin_bp.route('/sermons/create', methods=['GET', 'POST'])
+@login_required
+def sermons_create():
+    form = SermonForm()
+    if form.validate_on_submit():
+        sermon = Sermon(
+            title=form.title.data,
+            speaker=form.speaker.data,
+            series=form.series.data,
+            scripture_reference=form.scripture_reference.data,
+            excerpt=form.excerpt.data,
+            body=form.body.data,
+            video_url=form.video_url.data or None,
+            audio_url=form.audio_url.data or None,
+            content_type=form.content_type.data,
+            sermon_date=form.sermon_date.data,
+            is_published=form.is_published.data,
+            is_featured=form.is_featured.data,
+        )
+        sermon.generate_slug()
+
+        if form.image.data:
+            sermon.image_url = save_image(form.image.data, 'sermons')
+
+        db.session.add(sermon)
+        db.session.commit()
+        flash('Sermon/devotional created successfully.', 'success')
+        return redirect(url_for('admin_panel.sermons_list'))
+
+    return render_template('admin/sermons/form.html', form=form, editing=False)
+
+
+@admin_bp.route('/sermons/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+def sermons_edit(id):
+    sermon = Sermon.query.get_or_404(id)
+    form = SermonForm(obj=sermon)
+
+    if form.validate_on_submit():
+        sermon.title = form.title.data
+        sermon.speaker = form.speaker.data
+        sermon.series = form.series.data
+        sermon.scripture_reference = form.scripture_reference.data
+        sermon.excerpt = form.excerpt.data
+        sermon.body = form.body.data
+        sermon.video_url = form.video_url.data or None
+        sermon.audio_url = form.audio_url.data or None
+        sermon.content_type = form.content_type.data
+        sermon.sermon_date = form.sermon_date.data
+        sermon.is_published = form.is_published.data
+        sermon.is_featured = form.is_featured.data
+
+        if form.image.data:
+            delete_image(sermon.image_url)
+            sermon.image_url = save_image(form.image.data, 'sermons')
+
+        db.session.commit()
+        flash('Sermon/devotional updated successfully.', 'success')
+        return redirect(url_for('admin_panel.sermons_list'))
+
+    return render_template('admin/sermons/form.html', form=form, editing=True, item=sermon)
+
+
+@admin_bp.route('/sermons/<int:id>/delete', methods=['POST'])
+@login_required
+def sermons_delete(id):
+    sermon = Sermon.query.get_or_404(id)
+    delete_image(sermon.image_url)
+    db.session.delete(sermon)
+    db.session.commit()
+    flash('Sermon/devotional deleted.', 'success')
+    return redirect(url_for('admin_panel.sermons_list'))
+
+
+# ─── Media Gallery ────────────────────────────────────────────────────────────
+
+@admin_bp.route('/gallery')
+@login_required
+def gallery_list():
+    page = request.args.get('page', 1, type=int)
+    category = request.args.get('category', '')
+    query = MediaItem.query
+    if category:
+        query = query.filter_by(category=category)
+    items = query.order_by(MediaItem.sort_order, MediaItem.created_at.desc()).paginate(
+        page=page, per_page=24, error_out=False
+    )
+    return render_template('admin/gallery/list.html', items=items, current_category=category)
+
+
+@admin_bp.route('/gallery/create', methods=['GET', 'POST'])
+@login_required
+def gallery_create():
+    form = MediaItemForm()
+    if form.validate_on_submit():
+        item = MediaItem(
+            title=form.title.data,
+            description=form.description.data,
+            media_type=form.media_type.data,
+            category=form.category.data,
+            sort_order=form.sort_order.data or 0,
+            is_published=form.is_published.data,
+        )
+
+        if form.media_type.data == 'video':
+            item.file_url = form.video_url.data
+        elif form.image.data:
+            item.file_url = save_image(form.image.data, 'gallery')
+        else:
+            flash('Please upload an image or provide a video URL.', 'danger')
+            return render_template('admin/gallery/form.html', form=form, editing=False)
+
+        db.session.add(item)
+        db.session.commit()
+        flash('Media item added.', 'success')
+        return redirect(url_for('admin_panel.gallery_list'))
+
+    return render_template('admin/gallery/form.html', form=form, editing=False)
+
+
+@admin_bp.route('/gallery/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+def gallery_edit(id):
+    item = MediaItem.query.get_or_404(id)
+    form = MediaItemForm(obj=item)
+    if item.is_video:
+        form.video_url.data = form.video_url.data or item.file_url
+
+    if form.validate_on_submit():
+        item.title = form.title.data
+        item.description = form.description.data
+        item.media_type = form.media_type.data
+        item.category = form.category.data
+        item.sort_order = form.sort_order.data or 0
+        item.is_published = form.is_published.data
+
+        if form.media_type.data == 'video':
+            item.file_url = form.video_url.data
+        elif form.image.data:
+            if item.is_image:
+                delete_image(item.file_url)
+            item.file_url = save_image(form.image.data, 'gallery')
+
+        db.session.commit()
+        flash('Media item updated.', 'success')
+        return redirect(url_for('admin_panel.gallery_list'))
+
+    return render_template('admin/gallery/form.html', form=form, editing=True, item=item)
+
+
+@admin_bp.route('/gallery/<int:id>/delete', methods=['POST'])
+@login_required
+def gallery_delete(id):
+    item = MediaItem.query.get_or_404(id)
+    if item.is_image:
+        delete_image(item.file_url)
+    db.session.delete(item)
+    db.session.commit()
+    flash('Media item deleted.', 'success')
+    return redirect(url_for('admin_panel.gallery_list'))
+
+
+# ─── Giving Categories ────────────────────────────────────────────────────────
+
+@admin_bp.route('/giving/categories')
+@login_required
+def giving_categories_list():
+    categories = GivingCategory.query.order_by(GivingCategory.sort_order, GivingCategory.name).all()
+    return render_template('admin/giving/categories.html', categories=categories)
+
+
+@admin_bp.route('/giving/categories/create', methods=['GET', 'POST'])
+@login_required
+def giving_categories_create():
+    form = GivingCategoryForm()
+    if form.validate_on_submit():
+        slug = form.slug.data or form.name.data.lower().replace(' ', '-')
+        cat = GivingCategory(
+            name=form.name.data,
+            slug=slug,
+            description=form.description.data,
+            sort_order=form.sort_order.data or 0,
+            is_active=form.is_active.data,
+        )
+        db.session.add(cat)
+        db.session.commit()
+        flash('Giving category created.', 'success')
+        return redirect(url_for('admin_panel.giving_categories_list'))
+    return render_template('admin/giving/category_form.html', form=form, editing=False)
+
+
+@admin_bp.route('/giving/categories/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+def giving_categories_edit(id):
+    cat = GivingCategory.query.get_or_404(id)
+    form = GivingCategoryForm(obj=cat)
+    if form.validate_on_submit():
+        cat.name = form.name.data
+        cat.description = form.description.data
+        cat.sort_order = form.sort_order.data or 0
+        cat.is_active = form.is_active.data
+        db.session.commit()
+        flash('Giving category updated.', 'success')
+        return redirect(url_for('admin_panel.giving_categories_list'))
+    return render_template('admin/giving/category_form.html', form=form, editing=True, item=cat)
+
+
+@admin_bp.route('/giving/categories/<int:id>/delete', methods=['POST'])
+@login_required
+def giving_categories_delete(id):
+    cat = GivingCategory.query.get_or_404(id)
+    db.session.delete(cat)
+    db.session.commit()
+    flash('Giving category deleted.', 'success')
+    return redirect(url_for('admin_panel.giving_categories_list'))
+
+
+# ─── Donations (view / reports) ──────────────────────────────────────────────
+
+@admin_bp.route('/giving/donations')
+@login_required
+def donations_list():
+    page = request.args.get('page', 1, type=int)
+    status = request.args.get('status', '')
+    category_id = request.args.get('category', '', type=str)
+
+    query = Donation.query
+    if status in ('completed', 'pending', 'failed'):
+        query = query.filter_by(status=status)
+    if category_id:
+        query = query.filter_by(category_id=int(category_id))
+
+    donations = query.order_by(Donation.created_at.desc()).paginate(
+        page=page, per_page=25, error_out=False
+    )
+
+    # Summary stats
+    from sqlalchemy import func
+    total_completed = db.session.query(func.sum(Donation.amount)).filter_by(status='completed').scalar() or 0
+    total_count = Donation.query.filter_by(status='completed').count()
+
+    categories = GivingCategory.query.order_by(GivingCategory.name).all()
+
+    return render_template(
+        'admin/giving/donations.html',
+        donations=donations,
+        current_status=status,
+        current_category=category_id,
+        categories=categories,
+        total_completed=total_completed,
+        total_count=total_count,
+    )

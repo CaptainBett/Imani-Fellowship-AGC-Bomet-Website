@@ -50,11 +50,40 @@
         <div class="card p-3">
             <div class="d-flex align-items-center">
                 <div class="bg-info bg-opacity-10 rounded-3 p-3 me-3">
-                    <i class="bi bi-chat-dots text-info fs-4"></i>
+                    <i class="bi bi-journal-text text-info fs-4"></i>
                 </div>
                 <div>
-                    <h6 class="text-muted mb-0">Prayer Requests</h6>
-                    <h3 class="fw-bold mb-0">--</h3>
+                    <h6 class="text-muted mb-0">Sermons</h6>
+                    <h3 class="fw-bold mb-0">{{ sermon_count }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card p-3">
+            <div class="d-flex align-items-center">
+                <div class="bg-danger bg-opacity-10 rounded-3 p-3 me-3">
+                    <i class="bi bi-images text-danger fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-0">Media Items</h6>
+                    <h3 class="fw-bold mb-0">{{ media_count }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card p-3">
+            <div class="d-flex align-items-center">
+                <div class="bg-success bg-opacity-10 rounded-3 p-3 me-3">
+                    <i class="bi bi-heart text-success fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-0">Donations</h6>
+                    <h3 class="fw-bold mb-0">{{ donation_count }}</h3>
                 </div>
             </div>
         </div>
@@ -75,6 +104,12 @@
                 </a>
                 <a href="{{ url_for('admin_panel.team_create') }}" class="btn btn-outline-primary btn-sm">
                     <i class="bi bi-plus-circle"></i> Add Team Member
+                </a>
+                <a href="{{ url_for('admin_panel.sermons_create') }}" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-plus-circle"></i> New Sermon
+                </a>
+                <a href="{{ url_for('admin_panel.gallery_create') }}" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-plus-circle"></i> Add Media
                 </a>
                 <a href="{{ url_for('admin_panel.settings') }}" class="btn btn-outline-secondary btn-sm">
                     <i class="bi bi-gear"></i> Settings

@@ -2,9 +2,9 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from wtforms import (
     StringField, TextAreaField, BooleanField, SubmitField,
-    SelectField, IntegerField, DateTimeLocalField, HiddenField,
+    SelectField, IntegerField, DateTimeLocalField, HiddenField, DateField,
 )
-from wtforms.validators import DataRequired, Optional, Length, Email
+from wtforms.validators import DataRequired, Optional, Length, Email, URL
 
 
 # --- Announcements ---
@@ -136,5 +136,66 @@ class FellowshipForm(FlaskForm):
     image = FileField('Fellowship Image', validators=[
         FileAllowed(['jpg', 'jpeg', 'png', 'webp', 'gif'], 'Images only!')
     ])
+    is_active = BooleanField('Active', default=True)
+    submit = SubmitField('Save')
+
+
+# --- Sermons & Devotionals ---
+
+class SermonForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired(), Length(max=200)])
+    speaker = StringField('Speaker', validators=[Optional(), Length(max=100)])
+    series = StringField('Series', validators=[Optional(), Length(max=100)])
+    scripture_reference = StringField('Scripture Reference', validators=[Optional(), Length(max=200)])
+    excerpt = StringField('Short Summary', validators=[Optional(), Length(max=500)])
+    body = TextAreaField('Content / Notes', validators=[Optional()])
+    video_url = StringField('Video URL (YouTube/Vimeo)', validators=[Optional(), Length(max=500)])
+    audio_url = StringField('Audio URL', validators=[Optional(), Length(max=500)])
+    image = FileField('Cover Image', validators=[
+        FileAllowed(['jpg', 'jpeg', 'png', 'webp', 'gif'], 'Images only!')
+    ])
+    content_type = SelectField('Type', choices=[
+        ('sermon', 'Sermon'),
+        ('devotional', 'Devotional'),
+        ('note', 'Study Note'),
+    ], validators=[DataRequired()])
+    sermon_date = DateField('Date', validators=[Optional()])
+    is_published = BooleanField('Published', default=True)
+    is_featured = BooleanField('Featured')
+    submit = SubmitField('Save')
+
+
+# --- Media Gallery ---
+
+class MediaItemForm(FlaskForm):
+    title = StringField('Title', validators=[Optional(), Length(max=200)])
+    description = TextAreaField('Description', validators=[Optional()])
+    media_type = SelectField('Media Type', choices=[
+        ('image', 'Image'),
+        ('video', 'Video (YouTube/Vimeo URL)'),
+    ], validators=[DataRequired()])
+    category = SelectField('Category', choices=[
+        ('gallery', 'General Gallery'),
+        ('choir', 'Choir'),
+        ('event', 'Event'),
+        ('church', 'Church Life'),
+        ('construction', 'Construction'),
+    ], validators=[DataRequired()])
+    image = FileField('Upload Image', validators=[
+        FileAllowed(['jpg', 'jpeg', 'png', 'webp', 'gif'], 'Images only!')
+    ])
+    video_url = StringField('Video URL (for video type)', validators=[Optional(), Length(max=500)])
+    sort_order = IntegerField('Display Order', default=0, validators=[Optional()])
+    is_published = BooleanField('Published', default=True)
+    submit = SubmitField('Save')
+
+
+# --- Giving Categories ---
+
+class GivingCategoryForm(FlaskForm):
+    name = StringField('Category Name', validators=[DataRequired(), Length(max=100)])
+    slug = StringField('URL Slug', validators=[Optional(), Length(max=100)])
+    description = TextAreaField('Description', validators=[Optional()])
+    sort_order = IntegerField('Display Order', default=0, validators=[Optional()])
     is_active = BooleanField('Active', default=True)
     submit = SubmitField('Save')

@@ -38,6 +38,15 @@ def create_app(config_name=None):
     from app.blueprints.connect import connect_bp
     app.register_blueprint(connect_bp)
 
+    from app.blueprints.media import media_bp
+    app.register_blueprint(media_bp)
+
+    from app.blueprints.giving import giving_bp
+    app.register_blueprint(giving_bp)
+
+    from app.blueprints.api import api_bp
+    app.register_blueprint(api_bp)
+
     # Import models so Flask-Migrate can detect them
     from app import models  # noqa: F401
 
