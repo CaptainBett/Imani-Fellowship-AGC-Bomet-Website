@@ -115,7 +115,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {% if 'construction' in request.endpoint or 'fundraising' in request.endpoint %}active{% endif %}"
+                           href="{{ url_for('admin_panel.construction_dashboard') }}">
                             <i class="bi bi-building"></i> Construction
                         </a>
                     </li>

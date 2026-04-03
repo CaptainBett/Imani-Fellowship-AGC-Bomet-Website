@@ -5,6 +5,8 @@ from app.models.site_setting import SiteSetting
 from app.models.announcement import Announcement
 from app.models.event import Event
 from app.models.team_member import TeamMember
+from app.models.ministry import Ministry
+from app.models.construction import ConstructionUpdate, FundraisingGroup
 
 
 @main_bp.route('/')
@@ -23,12 +25,18 @@ def home():
         Event.start_datetime > datetime.now(timezone.utc),
     ).order_by(Event.start_datetime).limit(3).all()
 
+    # Active ministries for homepage cards
+    ministries = Ministry.query.filter_by(is_active=True).order_by(
+        Ministry.sort_order, Ministry.name
+    ).limit(8).all()
+
     return render_template(
         'main/home.html',
         year_theme=year_theme,
         year_theme_verse=year_theme_verse,
         announcements=announcements,
         upcoming_events=upcoming_events,
+        ministries=ministries,
     )
 
 
@@ -46,4 +54,21 @@ def about():
         'main/about.html',
         pastoral_team=pastoral_team,
         elders=elders,
+    )
+
+
+@main_bp.route('/construction')
+def construction():
+    updates = ConstructionUpdate.query.order_by(
+        ConstructionUpdate.sort_order, ConstructionUpdate.created_at.desc()
+    ).all()
+    groups = FundraisingGroup.query.filter_by(is_active=True).order_by(
+        FundraisingGroup.sort_order, FundraisingGroup.name
+    ).all()
+    total_target = sum(g.target_amount or 0 for g in groups)
+    total_raised = sum(g.raised_amount or 0 for g in groups)
+    return render_template(
+        'main/construction.html',
+        updates=updates, groups=groups,
+        total_target=total_target, total_raised=total_raised,
     )

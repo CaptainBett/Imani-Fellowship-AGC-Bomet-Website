@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+
+{% block title %}Sanctuary Construction{% endblock %}
+
+{% block extra_css %}
+<style>
+    .construction-hero {
+        position: relative;
+        min-height: 45vh;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        color: white;
+    }
+    .construction-hero .hero-bg {
+        position: absolute;
+        inset: 0;
+        background:
+            url('{{ url_for("static", filename="img/const1.jpg") }}') center/cover no-repeat,
+            linear-gradient(135deg, #1b5e20 0%, #2e7d32 50%, #1b5e20 100%);
+        filter: blur(1.5px);
+        transform: scale(1.03);
+        z-index: 0;
+    }
+    .construction-hero .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(27,94,32,0.7) 0%, rgba(46,125,50,0.55) 100%);
+        z-index: 1;
+    }
+    .construction-hero .container {
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Timeline */
+    .timeline {
+        position: relative;
+        padding-left: 40px;
+    }
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 15px;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: #e0e0e0;
+    }
+    .timeline-item {
+        position: relative;
+        margin-bottom: 2rem;
+    }
+    .timeline-dot {
+        position: absolute;
+        left: -33px;
+        top: 4px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #ccc;
+        border: 3px solid #fff;
+        box-shadow: 0 0 0 2px #ccc;
+    }
+    .timeline-dot.current {
+        background: #2e7d32;
+        box-shadow: 0 0 0 2px #2e7d32;
+        animation: pulse-dot 2s infinite;
+    }
+    .timeline-dot.completed {
+        background: #1a3a5c;
+        box-shadow: 0 0 0 2px #1a3a5c;
+    }
+    @keyframes pulse-dot {
+        0%, 100% { box-shadow: 0 0 0 2px #2e7d32; }
+        50% { box-shadow: 0 0 0 6px rgba(46,125,50,0.3); }
+    }
+
+    /* Group card hover */
+    .group-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .group-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Banner -->
+<section class="construction-hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="container text-center py-5">
+        <h1 class="display-4 fw-bold mb-3">Building God's Sanctuary</h1>
+        <p class="lead mb-4" style="max-width: 650px; margin: 0 auto;">
+            Together we are raising a house of worship for Imani Fellowship AGC, Bomet.
+            Follow our progress and partner with us in this journey of faith.
+        </p>
+        {% if total_target > 0 %}
+        <div class="d-inline-block bg-white bg-opacity-25 rounded-pill px-4 py-2">
+            <strong>KES {{ "{:,.0f}".format(total_raised) }}</strong> raised of
+            <strong>KES {{ "{:,.0f}".format(total_target) }}</strong> target
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Overall Progress -->
+{% if total_target > 0 %}
+<section class="section-padding pb-0">
+    <div class="container">
+        <div class="card p-4 shadow-sm border-0" style="margin-top: -3rem; position: relative; z-index: 3;">
+            <div class="row align-items-center">
+                <div class="col-md-4 text-center mb-3 mb-md-0">
+                    <h6 class="text-muted mb-1">Overall Fundraising</h6>
+                    {% set overall_pct = ((total_raised / total_target) * 100)|round|int if total_target > 0 else 0 %}
+                    <h2 class="fw-bold text-success mb-0">{{ overall_pct }}%</h2>
+                </div>
+                <div class="col-md-8">
+                    <div class="progress" style="height: 20px; border-radius: 10px;">
+                        <div class="progress-bar bg-success progress-bar-striped progress-bar-animated"
+                             style="width: {{ overall_pct }}%"
+                             role="progressbar" aria-valuenow="{{ overall_pct }}" aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2 small text-muted">
+                        <span>KES {{ "{:,.0f}".format(total_raised) }} raised</span>
+                        <span>KES {{ "{:,.0f}".format(total_target) }} target</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Construction Timeline -->
+{% if updates %}
+<section class="section-padding">
+    <div class="container">
+        <h2 class="section-title text-center section-title-center">Construction Progress</h2>
+        <p class="text-center text-muted mb-5 mx-auto" style="max-width: 600px;">
+            Track each phase of our sanctuary construction journey.
+        </p>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="timeline">
+                    {% for u in updates %}
+                    <div class="timeline-item">
+                        <div class="timeline-dot {{ 'current' if u.is_current else ('completed' if u.percentage == 100 else '') }}"></div>
+                        <div class="card border-0 shadow-sm {{ 'border-start border-success border-3' if u.is_current else '' }}">
+                            {% if u.image_url %}
+                            <img src="{{ url_for('static', filename=u.image_url) }}" class="card-img-top"
+                                 alt="{{ u.phase_name }}" style="height: 200px; object-fit: cover;" loading="lazy">
+                            {% endif %}
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="fw-bold mb-0">{{ u.phase_name }}</h5>
+                                    {% if u.is_current %}
+                                        <span class="badge bg-success">In Progress</span>
+                                    {% elif u.percentage == 100 %}
+                                        <span class="badge bg-primary">Completed</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ u.percentage }}%</span>
+                                    {% endif %}
+                                </div>
+                                {% if u.description %}
+                                    <p class="text-muted mb-3">{{ u.description }}</p>
+                                {% endif %}
+                                <div class="progress" style="height: 10px; border-radius: 5px;">
+                                    <div class="progress-bar {{ 'bg-success' if u.is_current else 'bg-primary' }}"
+                                         style="width: {{ u.percentage }}%"></div>
+                                </div>
+                                <small class="text-muted">{{ u.percentage }}% complete</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Fundraising Groups -->
+{% if groups %}
+<section class="section-padding bg-light">
+    <div class="container">
+        <h2 class="section-title text-center section-title-center">Fundraising Groups</h2>
+        <p class="text-center text-muted mb-5 mx-auto" style="max-width: 600px;">
+            Our congregation is organized into groups, each contributing towards our building goal.
+            Join a group and be part of this vision.
+        </p>
+
+        <div class="row g-4">
+            {% for g in groups %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card group-card h-100 border-0 shadow-sm overflow-hidden">
+                    {% if g.image_url %}
+                        <img src="{{ url_for('static', filename=g.image_url) }}" class="card-img-top"
+                             alt="{{ g.name }}" style="height: 160px; object-fit: cover;" loading="lazy">
+                    {% endif %}
+                    <div class="card-body text-center">
+                        <h5 class="fw-bold mb-2">{{ g.name }}</h5>
+                        {% if g.description %}
+                            <p class="text-muted small mb-3">{{ g.description }}</p>
+                        {% endif %}
+
+                        <!-- Progress -->
+                        <div class="mb-3">
+                            <div class="progress" style="height: 10px; border-radius: 5px;">
+                                <div class="progress-bar bg-success" style="width: {{ g.progress_percent }}%"></div>
+                            </div>
+                            <div class="d-flex justify-content-between mt-1">
+                                <small class="text-muted">KES {{ "{:,.0f}".format(g.raised_amount or 0) }}</small>
+                                <small class="text-muted fw-bold">{{ g.progress_percent }}%</small>
+                                <small class="text-muted">KES {{ "{:,.0f}".format(g.target_amount or 0) }}</small>
+                            </div>
+                        </div>
+
+                        {% if g.contact_person %}
+                        <div class="small text-muted mb-2">
+                            <i class="bi bi-person"></i> {{ g.contact_person }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% if g.contact_phone %}
+                    <div class="card-footer bg-transparent border-0 pb-3 px-3">
+                        <a href="https://wa.me/{{ g.contact_phone|replace(' ', '')|replace('-', '')|replace('+', '') }}?text={{ ('Hi, I would like to join the ' ~ g.name ~ ' fundraising group for the sanctuary construction.')|urlencode }}"
+                           target="_blank" rel="noopener noreferrer"
+                           class="btn btn-success btn-sm w-100 fw-bold">
+                            <i class="bi bi-whatsapp"></i> Join Group via WhatsApp
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Construction Gallery (from media items) -->
+<section class="section-padding">
+    <div class="container">
+        <h2 class="section-title text-center section-title-center">Construction Gallery</h2>
+        <div class="row g-3">
+            {% set const_images = ['const1.jpg','const2.jpg','const3.jpg','const4.jpg','const5.jpg','const6.jpg','const7.jpg','const8.jpg'] %}
+            {% for img in const_images %}
+            <div class="col-6 col-md-3">
+                <img src="{{ url_for('static', filename='img/' ~ img) }}" alt="Construction progress"
+                     class="img-fluid rounded shadow-sm w-100" style="height: 180px; object-fit: cover; cursor: pointer;"
+                     loading="lazy" data-bs-toggle="modal" data-bs-target="#galleryModal"
+                     onclick="document.getElementById('modalImg').src=this.src">
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Give CTA -->
+<section class="section-padding bg-primary text-white text-center">
+    <div class="container">
+        <h2 class="fw-bold mb-3">Partner With Us</h2>
+        <p class="lead mb-4 mx-auto" style="max-width: 600px;">
+            Every contribution brings us closer to completing our sanctuary.
+            Give towards the construction today.
+        </p>
+        <a href="{{ url_for('giving.give') }}" class="btn btn-warning btn-lg fw-bold px-5">
+            <i class="bi bi-heart-fill"></i> Give Now
+        </a>
+    </div>
+</section>
+
+<!-- Lightbox Modal -->
+<div class="modal fade" id="galleryModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-body p-0 text-center">
+                <img id="modalImg" src="" alt="Construction photo" class="img-fluid rounded">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

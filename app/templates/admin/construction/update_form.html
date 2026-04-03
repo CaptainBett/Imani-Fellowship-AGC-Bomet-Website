@@ -1,0 +1,71 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ 'Edit' if editing else 'New' }} Construction Phase{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">{{ 'Edit' if editing else 'New' }} Construction Phase</h2>
+    <a href="{{ url_for('admin_panel.construction_dashboard') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+</div>
+
+<div class="card p-4">
+    <form method="POST" enctype="multipart/form-data"
+          action="{{ url_for('admin_panel.construction_update_edit', id=item.id) if editing else url_for('admin_panel.construction_update_create') }}">
+        {{ form.hidden_tag() }}
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Phase Name</label>
+            {{ form.phase_name(class="form-control", placeholder="e.g. Foundation, Walls, Roofing") }}
+            {% for error in form.phase_name.errors %}
+                <div class="text-danger small mt-1">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Description</label>
+            {{ form.description(class="form-control", rows="3", placeholder="Brief description of this phase") }}
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label fw-bold">Progress (%)</label>
+                {{ form.percentage(class="form-control", type="number", min="0", max="100") }}
+                {% for error in form.percentage.errors %}
+                    <div class="text-danger small mt-1">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label fw-bold">Display Order</label>
+                {{ form.sort_order(class="form-control", type="number") }}
+            </div>
+            <div class="col-md-4 mb-3 d-flex align-items-end">
+                <div class="form-check">
+                    {{ form.is_current(class="form-check-input") }}
+                    <label class="form-check-label fw-bold">Mark as Current Phase</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Phase Image</label>
+            {{ form.image(class="form-control") }}
+            {% if editing and item.image_url %}
+                <div class="mt-2">
+                    <img src="{{ url_for('static', filename=item.image_url) }}" alt="Current image"
+                         style="max-height: 120px; border-radius: 8px;">
+                    <small class="text-muted d-block mt-1">Upload a new image to replace.</small>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-circle"></i> {{ 'Update' if editing else 'Create' }} Phase
+            </button>
+            <a href="{{ url_for('admin_panel.construction_dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
