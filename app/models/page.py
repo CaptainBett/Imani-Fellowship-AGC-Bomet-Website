@@ -9,6 +9,7 @@ class Page(db.Model):
     slug = db.Column(db.String(100), unique=True, nullable=False, index=True)
     title = db.Column(db.String(200), nullable=False)
     content = db.Column(db.Text, nullable=False, default='')
+    image_url = db.Column(db.String(500))
     meta_description = db.Column(db.String(300))
     updated_at = db.Column(
         db.DateTime,

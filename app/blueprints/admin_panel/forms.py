@@ -3,8 +3,9 @@ from flask_wtf.file import FileField, FileAllowed
 from wtforms import (
     StringField, TextAreaField, BooleanField, SubmitField,
     SelectField, IntegerField, DateTimeLocalField, HiddenField, DateField,
+    FloatField,
 )
-from wtforms.validators import DataRequired, Optional, Length, Email, URL
+from wtforms.validators import DataRequired, Optional, Length, Email, URL, NumberRange
 
 
 # --- Announcements ---
@@ -72,6 +73,9 @@ class TeamMemberForm(FlaskForm):
 class PageForm(FlaskForm):
     title = StringField('Page Title', validators=[DataRequired(), Length(max=200)])
     content = TextAreaField('Content', validators=[DataRequired()])
+    image = FileField('Featured Image', validators=[
+        FileAllowed(['jpg', 'jpeg', 'png', 'webp'], 'Images only!')
+    ])
     meta_description = StringField('Meta Description (SEO)', validators=[Optional(), Length(max=300)])
     submit = SubmitField('Save')
 
@@ -187,6 +191,36 @@ class MediaItemForm(FlaskForm):
     video_url = StringField('Video URL (for video type)', validators=[Optional(), Length(max=500)])
     sort_order = IntegerField('Display Order', default=0, validators=[Optional()])
     is_published = BooleanField('Published', default=True)
+    submit = SubmitField('Save')
+
+
+# --- Construction Updates ---
+
+class ConstructionUpdateForm(FlaskForm):
+    phase_name = StringField('Phase Name', validators=[DataRequired(), Length(max=150)])
+    description = TextAreaField('Description', validators=[Optional()])
+    percentage = IntegerField('Progress (%)', default=0,
+                              validators=[Optional(), NumberRange(min=0, max=100)])
+    image = FileField('Phase Image', validators=[
+        FileAllowed(['jpg', 'jpeg', 'png', 'webp', 'gif'], 'Images only!')
+    ])
+    sort_order = IntegerField('Display Order', default=0, validators=[Optional()])
+    is_current = BooleanField('Current Phase')
+    submit = SubmitField('Save')
+
+
+class FundraisingGroupForm(FlaskForm):
+    name = StringField('Group Name', validators=[DataRequired(), Length(max=100)])
+    description = TextAreaField('Description', validators=[Optional()])
+    target_amount = FloatField('Target Amount (KES)', default=0, validators=[Optional()])
+    raised_amount = FloatField('Amount Raised (KES)', default=0, validators=[Optional()])
+    contact_person = StringField('Contact Person', validators=[Optional(), Length(max=100)])
+    contact_phone = StringField('Contact Phone', validators=[Optional(), Length(max=20)])
+    image = FileField('Group Image', validators=[
+        FileAllowed(['jpg', 'jpeg', 'png', 'webp', 'gif'], 'Images only!')
+    ])
+    sort_order = IntegerField('Display Order', default=0, validators=[Optional()])
+    is_active = BooleanField('Active', default=True)
     submit = SubmitField('Save')
 
 

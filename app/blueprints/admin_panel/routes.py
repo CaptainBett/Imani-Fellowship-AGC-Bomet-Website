@@ -5,7 +5,7 @@ from app.blueprints.admin_panel import admin_bp
 from app.blueprints.admin_panel.forms import (
     AnnouncementForm, EventForm, TeamMemberForm, PageForm, SiteSettingsForm,
     MinistryForm, MinistryContentForm, FellowshipForm, SermonForm, MediaItemForm,
-    GivingCategoryForm,
+    GivingCategoryForm, ConstructionUpdateForm, FundraisingGroupForm,
 )
 from app.extensions import db
 from app.models.announcement import Announcement
@@ -20,6 +20,7 @@ from app.models.sermon import Sermon
 from app.models.media import MediaItem
 from app.models.giving import GivingCategory, Donation
 from app.models.prayer_request import PrayerRequest
+from app.models.construction import ConstructionUpdate, FundraisingGroup
 from app.models.site_setting import SiteSetting
 from app.services.uploads import save_image, delete_image
 
@@ -300,6 +301,8 @@ def pages_create():
             meta_description=form.meta_description.data,
             updated_by=current_user.id,
         )
+        if form.image.data:
+            page.image_url = save_image(form.image.data, 'pages')
         db.session.add(page)
         db.session.commit()
         flash('Page created successfully.', 'success')
@@ -319,6 +322,8 @@ def pages_edit(id):
         page.content = form.content.data
         page.meta_description = form.meta_description.data
         page.updated_by = current_user.id
+        if form.image.data:
+            page.image_url = save_image(form.image.data, 'pages')
         db.session.commit()
         flash('Page updated successfully.', 'success')
         return redirect(url_for('admin_panel.pages_list'))
@@ -948,3 +953,129 @@ def prayer_requests_delete(id):
     db.session.commit()
     flash('Prayer request removed.', 'success')
     return redirect(url_for('admin_panel.prayer_requests_list'))
+
+
+# ─── Construction Updates ────────────────────────────────────────────────────
+
+@admin_bp.route('/construction')
+@login_required
+def construction_dashboard():
+    updates = ConstructionUpdate.query.order_by(
+        ConstructionUpdate.sort_order, ConstructionUpdate.created_at.desc()
+    ).all()
+    groups = FundraisingGroup.query.order_by(
+        FundraisingGroup.sort_order, FundraisingGroup.name
+    ).all()
+    total_target = sum(g.target_amount or 0 for g in groups)
+    total_raised = sum(g.raised_amount or 0 for g in groups)
+    return render_template(
+        'admin/construction/dashboard.html',
+        updates=updates, groups=groups,
+        total_target=total_target, total_raised=total_raised,
+    )
+
+
+@admin_bp.route('/construction/updates/create', methods=['GET', 'POST'])
+@login_required
+def construction_update_create():
+    form = ConstructionUpdateForm()
+    if form.validate_on_submit():
+        update = ConstructionUpdate(
+            phase_name=form.phase_name.data,
+            description=form.description.data,
+            percentage=form.percentage.data or 0,
+            sort_order=form.sort_order.data or 0,
+            is_current=form.is_current.data,
+        )
+        if form.image.data:
+            update.image_url = save_image(form.image.data, 'construction')
+        db.session.add(update)
+        db.session.commit()
+        flash('Construction phase added.', 'success')
+        return redirect(url_for('admin_panel.construction_dashboard'))
+    return render_template('admin/construction/update_form.html', form=form, editing=False)
+
+
+@admin_bp.route('/construction/updates/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+def construction_update_edit(id):
+    update = ConstructionUpdate.query.get_or_404(id)
+    form = ConstructionUpdateForm(obj=update)
+    if form.validate_on_submit():
+        update.phase_name = form.phase_name.data
+        update.description = form.description.data
+        update.percentage = form.percentage.data or 0
+        update.sort_order = form.sort_order.data or 0
+        update.is_current = form.is_current.data
+        if form.image.data:
+            update.image_url = save_image(form.image.data, 'construction')
+        db.session.commit()
+        flash('Construction phase updated.', 'success')
+        return redirect(url_for('admin_panel.construction_dashboard'))
+    return render_template('admin/construction/update_form.html', form=form, editing=True, item=update)
+
+
+@admin_bp.route('/construction/updates/<int:id>/delete', methods=['POST'])
+@login_required
+def construction_update_delete(id):
+    update = ConstructionUpdate.query.get_or_404(id)
+    db.session.delete(update)
+    db.session.commit()
+    flash('Construction phase removed.', 'success')
+    return redirect(url_for('admin_panel.construction_dashboard'))
+
+
+@admin_bp.route('/construction/groups/create', methods=['GET', 'POST'])
+@login_required
+def fundraising_group_create():
+    form = FundraisingGroupForm()
+    if form.validate_on_submit():
+        group = FundraisingGroup(
+            name=form.name.data,
+            description=form.description.data,
+            target_amount=form.target_amount.data or 0,
+            raised_amount=form.raised_amount.data or 0,
+            contact_person=form.contact_person.data,
+            contact_phone=form.contact_phone.data,
+            sort_order=form.sort_order.data or 0,
+            is_active=form.is_active.data,
+        )
+        if form.image.data:
+            group.image_url = save_image(form.image.data, 'construction')
+        db.session.add(group)
+        db.session.commit()
+        flash('Fundraising group added.', 'success')
+        return redirect(url_for('admin_panel.construction_dashboard'))
+    return render_template('admin/construction/group_form.html', form=form, editing=False)
+
+
+@admin_bp.route('/construction/groups/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+def fundraising_group_edit(id):
+    group = FundraisingGroup.query.get_or_404(id)
+    form = FundraisingGroupForm(obj=group)
+    if form.validate_on_submit():
+        group.name = form.name.data
+        group.description = form.description.data
+        group.target_amount = form.target_amount.data or 0
+        group.raised_amount = form.raised_amount.data or 0
+        group.contact_person = form.contact_person.data
+        group.contact_phone = form.contact_phone.data
+        group.sort_order = form.sort_order.data or 0
+        group.is_active = form.is_active.data
+        if form.image.data:
+            group.image_url = save_image(form.image.data, 'construction')
+        db.session.commit()
+        flash('Fundraising group updated.', 'success')
+        return redirect(url_for('admin_panel.construction_dashboard'))
+    return render_template('admin/construction/group_form.html', form=form, editing=True, item=group)
+
+
+@admin_bp.route('/construction/groups/<int:id>/delete', methods=['POST'])
+@login_required
+def fundraising_group_delete(id):
+    group = FundraisingGroup.query.get_or_404(id)
+    db.session.delete(group)
+    db.session.commit()
+    flash('Fundraising group removed.', 'success')
+    return redirect(url_for('admin_panel.construction_dashboard'))

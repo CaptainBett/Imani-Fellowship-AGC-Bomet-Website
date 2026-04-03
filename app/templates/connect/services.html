@@ -6,49 +6,63 @@
 <section class="section-padding">
     <div class="container">
         <h1 class="section-title text-center section-title-center">Services & Facilities</h1>
-        <p class="text-center text-muted mb-5">We offer various services to bless our community.</p>
+        <p class="text-center text-muted mb-5 mx-auto" style="max-width: 600px;">
+            We offer various services to bless our community. Explore what's available and reach out to learn more.
+        </p>
 
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center">
             <!-- Daycare -->
             <div class="col-md-6">
-                <div class="card h-100 p-4">
-                    <div class="text-center mb-3">
-                        <i class="bi bi-emoji-heart-eyes text-primary" style="font-size: 3rem;"></i>
-                    </div>
-                    <h3 class="text-center">Daycare Services</h3>
-                    {% if daycare_page %}
-                        <div class="content-body">{{ daycare_page.content|safe }}</div>
-                    {% else %}
-                        <p class="text-muted text-center">
-                            We provide quality daycare services for parents who need a safe and nurturing
-                            environment for their children during work hours. Our trained caregivers
-                            ensure your children are well looked after.
-                        </p>
-                        <p class="text-muted text-center small">
-                            <i>Detailed information can be added via the admin panel (Pages > "Daycare").</i>
-                        </p>
+                <div class="card h-100 border-0 shadow-sm overflow-hidden">
+                    {% if daycare_page and daycare_page.image_url %}
+                        <img src="{{ url_for('static', filename=daycare_page.image_url) }}" class="card-img-top"
+                             alt="Daycare Services" style="height: 220px; object-fit: cover;" loading="lazy">
                     {% endif %}
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-emoji-heart-eyes text-primary" style="font-size: 2.5rem;"></i>
+                        </div>
+                        <h3 class="fw-bold mb-3">Daycare Services</h3>
+                        {% if daycare_page %}
+                            <div class="content-body text-muted">{{ daycare_page.content|safe }}</div>
+                        {% else %}
+                            <p class="text-muted">
+                                We provide quality daycare services for parents who need a safe and nurturing
+                                environment for their children during work hours. Our trained caregivers
+                                ensure your children are well looked after.
+                            </p>
+                            <p class="text-muted small fst-italic">
+                                Detailed information can be added via the admin panel (Pages > "Daycare").
+                            </p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
 
             <!-- Conference Venue -->
             <div class="col-md-6">
-                <div class="card h-100 p-4">
-                    <div class="text-center mb-3">
-                        <i class="bi bi-building text-primary" style="font-size: 3rem;"></i>
-                    </div>
-                    <h3 class="text-center">Conference & Meeting Venue</h3>
-                    {% if conference_page %}
-                        <div class="content-body">{{ conference_page.content|safe }}</div>
-                    {% else %}
-                        <p class="text-muted text-center">
-                            Our church facilities are available for meetings, conferences, and community
-                            events. The venue is well-equipped with seating and amenities for your gatherings.
-                        </p>
-                        <p class="text-muted text-center small">
-                            <i>Detailed information can be added via the admin panel (Pages > "Conference Venue").</i>
-                        </p>
+                <div class="card h-100 border-0 shadow-sm overflow-hidden">
+                    {% if conference_page and conference_page.image_url %}
+                        <img src="{{ url_for('static', filename=conference_page.image_url) }}" class="card-img-top"
+                             alt="Conference & Meeting Venue" style="height: 220px; object-fit: cover;" loading="lazy">
                     {% endif %}
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-building text-primary" style="font-size: 2.5rem;"></i>
+                        </div>
+                        <h3 class="fw-bold mb-3">Conference & Meeting Venue</h3>
+                        {% if conference_page %}
+                            <div class="content-body text-muted">{{ conference_page.content|safe }}</div>
+                        {% else %}
+                            <p class="text-muted">
+                                Our church facilities are available for meetings, conferences, and community
+                                events. The venue is well-equipped with seating and amenities for your gatherings.
+                            </p>
+                            <p class="text-muted small fst-italic">
+                                Detailed information can be added via the admin panel (Pages > "Conference Venue").
+                            </p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -56,16 +70,23 @@
         <!-- General page content if exists -->
         {% if page %}
         <div class="mt-5">
+            {% if page.image_url %}
+                <div class="text-center mb-4">
+                    <img src="{{ url_for('static', filename=page.image_url) }}" alt="Services"
+                         class="img-fluid rounded shadow-sm" style="max-height: 350px; object-fit: cover;" loading="lazy">
+                </div>
+            {% endif %}
             <div class="content-body">{{ page.content|safe }}</div>
         </div>
         {% endif %}
 
         <!-- Contact CTA -->
-        <div class="text-center mt-5">
-            <p class="text-muted">For inquiries about our services and facilities, please contact us:</p>
-            <p>
+        <div class="text-center mt-5 p-4 bg-light rounded">
+            <h5 class="fw-bold mb-3">Interested in our services?</h5>
+            <p class="text-muted mb-3">For inquiries about our services and facilities, please contact us:</p>
+            <p class="mb-0">
                 <i class="bi bi-telephone text-primary"></i> {{ site.church_phone }}
-                &nbsp;&nbsp;|&nbsp;&nbsp;
+                <span class="mx-2">|</span>
                 <i class="bi bi-envelope text-primary"></i> {{ site.church_email }}
             </p>
         </div>
