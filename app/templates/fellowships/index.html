@@ -38,11 +38,19 @@
                             {% if f.contact_person %}
                             <li class="mb-1">
                                 <i class="bi bi-person text-primary"></i> {{ f.contact_person }}
-                                {% if f.contact_phone %} — {{ f.contact_phone }}{% endif %}
                             </li>
                             {% endif %}
                         </ul>
                     </div>
+                    {% if f.contact_phone %}
+                    <div class="card-footer bg-transparent border-0 pb-3 px-3">
+                        <a href="https://wa.me/{{ f.contact_phone|replace(' ', '')|replace('-', '')|replace('+', '') }}?text={{ ('Hi, I would like to join the ' ~ f.name ~ ' fellowship. Please add me!')|urlencode }}"
+                           target="_blank" rel="noopener noreferrer"
+                           class="btn btn-success w-100 fw-bold">
+                            <i class="bi bi-whatsapp"></i> Join via WhatsApp
+                        </a>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}

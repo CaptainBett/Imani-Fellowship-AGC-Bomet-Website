@@ -10,6 +10,22 @@
     --imani-light: #f8f9fa;
 }
 
+/* -- Typography -- */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #2d3436;
+}
+
+h1, h2, h3, .display-4, .display-6, .section-title {
+    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+}
+
+h4, h5, h6 {
+    font-family: 'Inter', sans-serif;
+}
+
 /* Override Bootstrap primary */
 .bg-primary {
     background-color: var(--imani-primary) !important;
@@ -25,28 +41,19 @@
     border-color: #0f2740;
 }
 
+.btn-outline-primary {
+    color: var(--imani-primary);
+    border-color: var(--imani-primary);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--imani-primary);
+    border-color: var(--imani-primary);
+    color: #fff;
+}
+
 .text-primary {
     color: var(--imani-primary) !important;
-}
-
-/* -- Hero Section -- */
-.hero-section {
-    background: linear-gradient(135deg, var(--imani-primary) 0%, #2c5f8a 100%);
-    color: white;
-    padding: 4rem 0;
-    min-height: 60vh;
-    display: flex;
-    align-items: center;
-}
-
-.hero-section h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-}
-
-.hero-section .lead {
-    font-size: 1.25rem;
-    opacity: 0.9;
 }
 
 /* -- Year Theme Badge -- */
@@ -58,6 +65,7 @@
     border-radius: 50px;
     display: inline-block;
     font-size: 1.1rem;
+    letter-spacing: 0.02em;
 }
 
 /* -- Section Spacing -- */
@@ -90,11 +98,16 @@
     border: none;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 12px;
 }
 
 .card:hover {
     transform: translateY(-3px);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.card-img-top {
+    border-radius: 12px 12px 0 0;
 }
 
 /* -- WhatsApp Floating Button -- */
@@ -124,8 +137,44 @@
 }
 
 /* -- Navbar -- */
+.navbar {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
 .navbar-brand {
-    font-size: 1.2rem;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    letter-spacing: 0.01em;
+}
+
+.navbar-brand img {
+    border-radius: 4px;
+    object-fit: contain;
+}
+
+.navbar .nav-link {
+    font-weight: 500;
+    padding: 0.5rem 0.85rem !important;
+    font-size: 0.95rem;
+    letter-spacing: 0.01em;
+}
+
+.navbar .dropdown-menu {
+    border: none;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    border-radius: 10px;
+    padding: 0.5rem 0;
+}
+
+.navbar .dropdown-item {
+    font-size: 0.9rem;
+    padding: 0.5rem 1.2rem;
+}
+
+.navbar .dropdown-item:hover {
+    background-color: rgba(26, 58, 92, 0.08);
 }
 
 /* -- Give Button in Navbar -- */
@@ -135,14 +184,78 @@
     border-radius: 20px;
     font-weight: 700;
     padding: 0.4rem 1.2rem;
+    transition: all 0.2s ease;
 }
 
 .navbar .btn-give:hover {
     background-color: #b8962e !important;
     color: #fff !important;
+    transform: scale(1.05);
 }
 
-/* -- Footer -- */
+/* ===========================
+   Mobile Offcanvas Menu
+   =========================== */
+.offcanvas {
+    max-width: 300px;
+}
+
+.offcanvas-header {
+    padding: 1.2rem 1rem;
+}
+
+.offcanvas-title {
+    font-family: 'Playfair Display', serif;
+}
+
+.mobile-nav-link {
+    display: block;
+    padding: 0.85rem 1.25rem;
+    color: #2d3436;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.15s ease, padding-left 0.15s ease;
+}
+
+.mobile-nav-link:hover,
+.mobile-nav-link:focus {
+    background-color: rgba(26, 58, 92, 0.06);
+    color: var(--imani-primary);
+    padding-left: 1.5rem;
+}
+
+.mobile-nav-link i {
+    width: 24px;
+    text-align: center;
+    margin-right: 10px;
+    color: var(--imani-primary);
+    font-size: 1.05rem;
+}
+
+.mobile-nav-divider {
+    background-color: var(--imani-light);
+    color: var(--imani-primary);
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.65rem 1.25rem 0.45rem;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+/* ===========================
+   Footer
+   =========================== */
+footer {
+    font-size: 0.95rem;
+}
+
+footer h5, footer h6 {
+    font-family: 'Playfair Display', serif;
+}
+
 footer .text-muted {
     color: #adb5bd !important;
 }
@@ -152,17 +265,18 @@ footer a:hover {
     color: var(--imani-secondary) !important;
 }
 
-/* -- Responsive adjustments -- */
+footer .d-flex.gap-3 a {
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+footer .d-flex.gap-3 a:hover {
+    transform: scale(1.2);
+}
+
+/* ===========================
+   Responsive
+   =========================== */
 @media (max-width: 768px) {
-    .hero-section {
-        padding: 2.5rem 0;
-        min-height: 50vh;
-    }
-
-    .hero-section h1 {
-        font-size: 1.8rem;
-    }
-
     .section-padding {
         padding: 2.5rem 0;
     }
@@ -173,5 +287,24 @@ footer a:hover {
         width: 50px;
         height: 50px;
         font-size: 1.5rem;
+    }
+
+    h1, .display-4 {
+        font-size: 1.8rem !important;
+    }
+
+    .display-6 {
+        font-size: 1.4rem !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .section-padding {
+        padding: 2rem 0;
+    }
+
+    .year-theme-badge {
+        font-size: 0.95rem;
+        padding: 0.4rem 1.2rem;
     }
 }
