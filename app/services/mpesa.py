@@ -13,7 +13,7 @@ import logging
 from datetime import datetime, timezone
 
 import requests
-from flask import current_app
+from flask import current_app, request as flask_request
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +71,10 @@ def initiate_stk_push(phone_number, amount, account_reference='Giving', transact
     base_url = _get_base_url()
     shortcode = current_app.config['MPESA_SHORTCODE']
     passkey = current_app.config['MPESA_PASSKEY']
-    callback_url = current_app.config['MPESA_CALLBACK_URL']
+    # Use configured callback URL, or auto-construct from current domain
+    callback_url = current_app.config.get('MPESA_CALLBACK_URL') or ''
+    if not callback_url or 'yourdomain' in callback_url:
+        callback_url = flask_request.url_root.rstrip('/') + '/api/mpesa/callback'
 
     timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
     password = _generate_password(shortcode, passkey, timestamp)
