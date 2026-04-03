@@ -7,3 +7,6 @@ pip install -r requirements.txt
 
 # Run database migrations
 flask db upgrade
+
+# Create default admin user if none exists
+flask seed-admin

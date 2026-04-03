@@ -74,4 +74,38 @@ def create_app(config_name=None):
             },
         }
 
+    # Error handlers
+    @app.errorhandler(404)
+    def not_found(e):
+        from flask import render_template
+        return render_template('errors/404.html'), 404
+
+    @app.errorhandler(500)
+    def server_error(e):
+        from flask import render_template
+        return render_template('errors/500.html'), 500
+
+    @app.errorhandler(403)
+    def forbidden(e):
+        from flask import render_template
+        return render_template('errors/403.html'), 403
+
+    # CLI command to seed default admin
+    @app.cli.command('seed-admin')
+    def seed_admin():
+        """Create default admin user if none exists."""
+        from app.models.user import User
+        if User.query.first():
+            print('Admin user already exists. Skipping.')
+            return
+        admin = User(
+            email='admin@gmail.com',
+            display_name='Admin',
+            role='admin',
+        )
+        admin.set_password('admin001')
+        db.session.add(admin)
+        db.session.commit()
+        print('Default admin created: admin@gmail.com / admin001')
+
     return app

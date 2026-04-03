@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Server Error{% endblock %}
+
+{% block content %}
+<section class="section-padding" style="min-height: 60vh; display: flex; align-items: center;">
+    <div class="container text-center">
+        <h1 class="display-1 fw-bold text-primary mb-3">500</h1>
+        <h2 class="fw-bold mb-3">Something Went Wrong</h2>
+        <p class="text-muted mb-4" style="max-width: 500px; margin: 0 auto;">
+            We're sorry, something unexpected happened on our end.
+            Please try again in a few moments.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{{ url_for('main.home') }}" class="btn btn-primary btn-lg">
+                <i class="bi bi-house"></i> Go Home
+            </a>
+            <a href="javascript:location.reload()" class="btn btn-outline-primary btn-lg">
+                <i class="bi bi-arrow-clockwise"></i> Try Again
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
